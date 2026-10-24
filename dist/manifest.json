@@ -1,7 +1,7 @@
 {
   "library": "agent-marketplace",
   "version": "0.1.0",
-  "inputsDigest": "99995db426d2b877e24ef62ea1a0a2a7500517431bb98aa91b8ee22009906f71",
+  "inputsDigest": "158e8e872e0e2e2c7578f6a13dbbfab366f350cec0935ad3d60ec9425580c1e5",
   "counts": {
     "agents": 10,
     "commands": 3,
@@ -22,10 +22,6 @@
     },
     "dist/claude/LICENSE": {
       "sha256": "e97926590a7381904af79d3713bdf8e8f4f17fc72059094ab37f96b9b4e67db2",
-      "mode": 420
-    },
-    "dist/claude/THIRD_PARTY_NOTICES.md": {
-      "sha256": "5440f085e329ffa4d2f5d562111692ad9ca9540d8c998dca738f989194da687b",
       "mode": 420
     },
     "dist/claude/agents/crystal-code-reviewer.md": {
@@ -81,7 +77,7 @@
       "mode": 420
     },
     "dist/claude/library-version.json": {
-      "sha256": "545edf78495d57e3c432b35268b912266ae21b4131a4f13c4382831248daeda9",
+      "sha256": "41425ae4ac463b957a649f16ad47edf5c225543d1970be10ef9b8a31852796f2",
       "mode": 420
     },
     "dist/claude/skills/pandoc-converter/SKILL.md": {
@@ -144,10 +140,6 @@
       "sha256": "e97926590a7381904af79d3713bdf8e8f4f17fc72059094ab37f96b9b4e67db2",
       "mode": 420
     },
-    "dist/codex/THIRD_PARTY_NOTICES.md": {
-      "sha256": "5440f085e329ffa4d2f5d562111692ad9ca9540d8c998dca738f989194da687b",
-      "mode": 420
-    },
     "dist/codex/agents/devtools-crystal-code-reviewer.toml": {
       "sha256": "c562aba79052f60cec5fd3a9b4ef648dcf2d194383dc818859d63b0798623fc2",
       "mode": 420
@@ -189,7 +181,7 @@
       "mode": 420
     },
     "dist/codex/library-version.json": {
-      "sha256": "039719d3482410e460cd7f25af234780f29883bc64a569756c49b2b3cb60c0f5",
+      "sha256": "da2046e406441dc3644013a19aebf9dd3501cc71e856bca45c095514a15c3a53",
       "mode": 420
     },
     "dist/codex/plugin.json": {
@@ -360,10 +352,6 @@
       "sha256": "e97926590a7381904af79d3713bdf8e8f4f17fc72059094ab37f96b9b4e67db2",
       "mode": 420
     },
-    "dist/pi/THIRD_PARTY_NOTICES.md": {
-      "sha256": "5440f085e329ffa4d2f5d562111692ad9ca9540d8c998dca738f989194da687b",
-      "mode": 420
-    },
     "dist/pi/agents/devtools-crystal-code-reviewer.md": {
       "sha256": "699c6d76a20352b0314528d12b5d9638083f68c9cae6a1960e811b7ae8dc31a8",
       "mode": 420
@@ -405,11 +393,11 @@
       "mode": 420
     },
     "dist/pi/library-version.json": {
-      "sha256": "e758a4d01184cd3e5b2fcb6a36c2de0d4eb7f4cef1dc9b09c8187346f257f770",
+      "sha256": "cac90cc298ef86650c08b8f6dce840805161af3279297c15a107d74de87fa53d",
       "mode": 420
     },
     "dist/pi/package.json": {
-      "sha256": "252e7d413c12416f8a34a239e7f1ceaa688c311a6256ff77b98bcfbf3b6b81b1",
+      "sha256": "419f9ab03a312259a4299d9f8953fef981e311c8207f44d83b7647db54a57b25",
       "mode": 420
     },
     "dist/pi/prompts/devtools-plan.md": {

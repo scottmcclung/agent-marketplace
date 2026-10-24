@@ -16,7 +16,7 @@ const doc = file => parseDocument(text(file), file);
 async function fixture(t) {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'agent-marketplace-test-'));
   t.after(() => fs.rm(temp, { recursive: true, force: true }));
-  for (const entry of ['library', 'clients', 'scripts', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md']) await fs.cp(path.join(root, entry), path.join(temp, entry), { recursive: true });
+  for (const entry of ['library', 'clients', 'scripts', 'package.json', 'LICENSE']) await fs.cp(path.join(root, entry), path.join(temp, entry), { recursive: true });
   return temp;
 }
 async function changeJson(temp, file, change) {

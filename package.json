@@ -16,7 +16,7 @@
     "pack:release": "node scripts/package.mjs",
     "prepack": "npm run build"
   },
-  "files": ["dist/pi", "README.md", "LICENSE", "THIRD_PARTY_NOTICES.md"],
+  "files": ["dist/pi", "README.md", "LICENSE"],
   "keywords": ["pi-package", "agent-skills", "claude-code", "codex"],
   "pi": {
     "extensions": [],

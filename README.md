@@ -5,11 +5,6 @@ commands, distributed through **Claude Code plugins**, **Codex plugins**, and
 **Pi packages**. Each client installs and updates independently through its own
 native tooling. There is no custom machine-sync daemon or installer.
 
-The initial `devtools` collection contains **10 agents, 3 commands, and 3
-skills**, migrated from
-[cc-plugin-marketplace](https://github.com/scottmcclung/cc-plugin-marketplace).
-See [provenance](THIRD_PARTY_NOTICES.md).
-
 ## Layout
 
 ```text
@@ -38,8 +33,7 @@ carry that version and the same deterministic input fingerprint in
 
 ## Build and verify
 
-Requires **Node.js 22+ and npm**; no model calls, credentials, or Python are
-needed for the build or tests.
+Requires **Node.js 22+ and npm**
 
 ```bash
 npm ci

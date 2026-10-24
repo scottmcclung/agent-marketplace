@@ -12,8 +12,7 @@
     "prompts",
     "skills",
     "library-version.json",
-    "LICENSE",
-    "THIRD_PARTY_NOTICES.md"
+    "LICENSE"
   ],
   "pi": {
     "extensions": [],

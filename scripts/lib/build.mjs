@@ -228,8 +228,8 @@ export async function generate(root) {
     name: pkg.name, interface: { displayName: 'Agent Marketplace' },
     plugins: [{ name: identity.name, source: { source: 'local', path: './dist/codex' }, policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' }, category: 'Productivity' }]
   }));
-  emit('dist/pi/package.json', json({ name: pkg.name, version: pkg.version, description: pkg.description, license: pkg.license, repository: pkg.repository, keywords: ['pi-package'], files: ['agents', 'prompts', 'skills', 'library-version.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md'], pi: { extensions: [], skills: ['./skills'], prompts: ['./prompts'], themes: [], subagents: { agents: ['./agents'] } } }));
-  for (const file of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) {
+  emit('dist/pi/package.json', json({ name: pkg.name, version: pkg.version, description: pkg.description, license: pkg.license, repository: pkg.repository, keywords: ['pi-package'], files: ['agents', 'prompts', 'skills', 'library-version.json', 'LICENSE'], pi: { extensions: [], skills: ['./skills'], prompts: ['./prompts'], themes: [], subagents: { agents: ['./agents'] } } }));
+  for (const file of ['LICENSE']) {
     const bytes = await input(file);
     for (const id of CLIENTS) emit(`dist/${id}/${file}`, bytes);
   }

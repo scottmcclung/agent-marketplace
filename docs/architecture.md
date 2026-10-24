@@ -39,7 +39,7 @@ a build. CI checks them before a release.
 
 Each target includes `library-version.json`: library version, client, agent
 mode, and an input SHA-256 fingerprint. The fingerprint includes shared sources,
-client configurations/templates, compiler code, package metadata, and notices.
+client configurations/templates, compiler code, package metadata, and the license.
 It intentionally excludes timestamps and the current commit SHA to avoid
 self-referential or non-reproducible builds. `dist/manifest.json` records output
 checksums and executable modes (excluding itself).
