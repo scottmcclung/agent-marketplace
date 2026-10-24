@@ -2,6 +2,6 @@
   "library": "agent-marketplace",
   "version": "0.1.0",
   "client": "pi",
-  "inputsDigest": "a5ec00030a3defe485bd60386cad41f135dd40dd50ce829ff00f4ceb5bfeac4a",
+  "inputsDigest": "99995db426d2b877e24ef62ea1a0a2a7500517431bb98aa91b8ee22009906f71",
   "agentMode": "native"
 }

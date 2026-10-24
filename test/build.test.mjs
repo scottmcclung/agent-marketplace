@@ -117,7 +117,11 @@ test('imported literal templates and command argument placeholders are preserved
 test('skill scripts and references are copied byte-for-byte, not evaluated', async () => {
   const resource = 'pandoc-converter/scripts/batch_convert.py';
   const original = await fs.readFile(path.join(root, 'library/skills', resource));
-  for (const client of ['claude', 'pi', 'codex']) assert.deepEqual(built.get(`dist/${client}/skills/${resource}`).bytes, original);
+  for (const client of ['claude', 'pi', 'codex']) {
+    assert.deepEqual(built.get(`dist/${client}/skills/${resource}`).bytes, original);
+    assert.equal(built.get(`dist/${client}/skills/${resource}`).mode, 0o755);
+    assert.equal(built.get(`dist/${client}/skills/playwright-cli/references/tracing.md`).mode, 0o644);
+  }
   for (const file of await walk(path.join(root, 'library/skills'))) {
     if (file.endsWith('.hbs')) continue;
     for (const client of ['claude', 'pi', 'codex']) assert.ok(built.has(`dist/${client}/skills/${file}`), file);
@@ -184,7 +188,7 @@ test('check detects edits, missing and stale files without modifying them', asyn
   assert.deepEqual(await check(temp, built), []);
 });
 
-test('source symlinks are rejected', async t => {
+test('source symlinks are rejected', { skip: process.platform === 'win32' ? 'Windows symlink creation requires host privileges' : false }, async t => {
   const temp = await fixture(t);
   await fs.symlink(path.join(temp, 'package.json'), path.join(temp, 'library/skills/playwright-cli/external'));
   await assert.rejects(generate(temp), /Symlinks are not supported/);

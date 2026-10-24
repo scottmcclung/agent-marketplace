@@ -208,7 +208,9 @@ export async function generate(root) {
       const bytes = await input(source);
       const [skill, ...parts] = file.split('/');
       const destination = `${base}/skills/${context.skills[skill]}/${parts.join('/')}`;
-      const mode = (await fs.stat(path.join(root, source))).mode & 0o111 ? 0o755 : 0o644;
+      // Git checkouts on Windows do not expose POSIX executable bits. Derive
+      // executable scripts from their shebang so every host emits the same manifest.
+      const mode = bytes.subarray(0, 2).toString() === '#!' ? 0o755 : 0o644;
       emit(destination.replace(/\.hbs$/, ''), file.endsWith('.hbs') ? render(bytes.toString(), context, source) : bytes, mode);
     }
     for (const [file, output] of outputs) {
@@ -244,7 +246,7 @@ export async function check(root, outputs) {
   for (const [file, output] of outputs) {
     try {
       if (!(await fs.readFile(path.join(root, file))).equals(output.bytes)) differences.push(`changed: ${file}`);
-      if (((await fs.stat(path.join(root, file))).mode & 0o111) !== (output.mode & 0o111)) differences.push(`mode: ${file}`);
+      if (process.platform !== 'win32' && ((await fs.stat(path.join(root, file))).mode & 0o111) !== (output.mode & 0o111)) differences.push(`mode: ${file}`);
     } catch (error) { if (error.code === 'ENOENT') differences.push(`missing: ${file}`); else throw error; }
   }
   for (const dir of OUTPUT_ROOTS) {

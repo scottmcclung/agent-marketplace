@@ -1,7 +1,7 @@
 {
   "library": "agent-marketplace",
   "version": "0.1.0",
-  "inputsDigest": "a5ec00030a3defe485bd60386cad41f135dd40dd50ce829ff00f4ceb5bfeac4a",
+  "inputsDigest": "99995db426d2b877e24ef62ea1a0a2a7500517431bb98aa91b8ee22009906f71",
   "counts": {
     "agents": 10,
     "commands": 3,
@@ -81,7 +81,7 @@
       "mode": 420
     },
     "dist/claude/library-version.json": {
-      "sha256": "43eec63222c763f37031c5dd6eccb21e7845d9bd74f13082ebf3540c650659b3",
+      "sha256": "545edf78495d57e3c432b35268b912266ae21b4131a4f13c4382831248daeda9",
       "mode": 420
     },
     "dist/claude/skills/pandoc-converter/SKILL.md": {
@@ -189,7 +189,7 @@
       "mode": 420
     },
     "dist/codex/library-version.json": {
-      "sha256": "467a73f87ed40958dcac2a2325e0e529476aa706500f0b2c3b0f737cc16c6ecc",
+      "sha256": "039719d3482410e460cd7f25af234780f29883bc64a569756c49b2b3cb60c0f5",
       "mode": 420
     },
     "dist/codex/plugin.json": {
@@ -197,7 +197,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-crystal-code-reviewer/SKILL.md": {
-      "sha256": "1b6f1f361facf183366d27500d981966f9bc3438c1d3c8a48d02acbbca3b790f",
+      "sha256": "a846f570c03151e5192795f8dbcadc3300e1eb66372b9e19483d68f1bb41d338",
       "mode": 420
     },
     "dist/codex/skills/devtools-crystal-code-reviewer/references/prompt.md": {
@@ -205,7 +205,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-crystal-lang-engineer/SKILL.md": {
-      "sha256": "f68b1b22c6266d595a212496f8048b5a6e4cf628b76d2608fcc6cf39a3faa02c",
+      "sha256": "128992fd3e36bf98a0169d0ae247816fea732534dcec01fba9d3f6c6ea3611b7",
       "mode": 420
     },
     "dist/codex/skills/devtools-crystal-lang-engineer/references/prompt.md": {
@@ -213,7 +213,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-deno-javascript-expert/SKILL.md": {
-      "sha256": "53d07781afa45720df8db38a95fb88662698783d7c1a6ad1310ddbdaf8f9b126",
+      "sha256": "8e9d6d5c7e4933d49764df824981dba5399a3addffbe3bf5d05cb0d0c1034478",
       "mode": 420
     },
     "dist/codex/skills/devtools-deno-javascript-expert/references/prompt.md": {
@@ -221,7 +221,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-dev-ops-engineer/SKILL.md": {
-      "sha256": "2d7bfe56708312e1d9bc3637c59f9c3c1788ad4b06a4d324261306cbdea156c8",
+      "sha256": "7dbdaed413aa3fa684e83f061edb5fec417701656ae0500f14ae34f15e7e712c",
       "mode": 420
     },
     "dist/codex/skills/devtools-dev-ops-engineer/references/prompt.md": {
@@ -229,7 +229,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-diagram-expert/SKILL.md": {
-      "sha256": "dfdd3411fb8e2f23cc1996bfec673f85f7cbb896c68373bac6b1d95a380c3b9b",
+      "sha256": "ff1dea7f8bb3ee025d75e1e9331ce28f46b2f798f42b06ab63ec5b0f23566181",
       "mode": 420
     },
     "dist/codex/skills/devtools-diagram-expert/references/prompt.md": {
@@ -237,7 +237,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-js-software-engineer/SKILL.md": {
-      "sha256": "75753f3c6f399ef5710db742b652d7031a65331fadf52c349f477b6c984417bf",
+      "sha256": "dd0d06af1b63781b81ac9d968b80269274e061efde4910578255bff041dd447a",
       "mode": 420
     },
     "dist/codex/skills/devtools-js-software-engineer/references/prompt.md": {
@@ -245,7 +245,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-laravel-php-expert/SKILL.md": {
-      "sha256": "20ad3f2fd1b4d28402e6876a1299118f5375902a734cdcf62ef920c0ddd84ed6",
+      "sha256": "c9646d71d41546bc90dddb6d401d2ade91e7770a742d913a3f44ca48f03acac2",
       "mode": 420
     },
     "dist/codex/skills/devtools-laravel-php-expert/references/prompt.md": {
@@ -253,7 +253,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-plan/SKILL.md": {
-      "sha256": "81eb087ace45ff96a1c39cd74d505de2a3a1494e2350c7484cd2b48bcb4d5026",
+      "sha256": "6abae6312ee1384a8c8c131191186bfb79a80d9ef1e910b5084c666307c77aee",
       "mode": 420
     },
     "dist/codex/skills/devtools-plan/agents/openai.yaml": {
@@ -269,7 +269,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-salesforce-apex-test-engineer/SKILL.md": {
-      "sha256": "752ecc9c73041a3b755425793c82950e1057d3f01d70b5624e04b97cfb0fb912",
+      "sha256": "9261ed6aa88ddfbcd1d65beedddceef493b6b8036c2f42974222c4d20d049be8",
       "mode": 420
     },
     "dist/codex/skills/devtools-salesforce-apex-test-engineer/references/prompt.md": {
@@ -277,7 +277,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-salesforce-platform-expert/SKILL.md": {
-      "sha256": "a07ffcfe9ecd3b618fdfd851acefeaed6e58f1d6773cb8189d62df1de6517380",
+      "sha256": "8c1b1f4e3d26ab6ec8cd419959a19d415c2ce24fe9dbf5155ea7c9438c31aaa8",
       "mode": 420
     },
     "dist/codex/skills/devtools-salesforce-platform-expert/references/prompt.md": {
@@ -285,7 +285,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-uat-specialist/SKILL.md": {
-      "sha256": "dfc60bb337a5dc14a270cfc9744e99351c3cc918be21304b9a4eff1038ecbfa9",
+      "sha256": "dfe5a12c8552045495ebb4932ce7368c5f7ef4282c15f2a8101cdf4eb043b7d3",
       "mode": 420
     },
     "dist/codex/skills/devtools-uat-specialist/references/prompt.md": {
@@ -293,7 +293,7 @@
       "mode": 420
     },
     "dist/codex/skills/devtools-work/SKILL.md": {
-      "sha256": "5922ec4cfc53833b3370292b5e131eba024775f700c2c5c129e340cd7929720e",
+      "sha256": "3e2406464fdc238c0bd6abf00066e91a9e7719d1d2a23240a56a734962b4618f",
       "mode": 420
     },
     "dist/codex/skills/devtools-work/agents/openai.yaml": {
@@ -405,7 +405,7 @@
       "mode": 420
     },
     "dist/pi/library-version.json": {
-      "sha256": "d6a053766d8ba451dd0ac467af7fa0c51c9d1105e19c71f280ffbc5c170fe037",
+      "sha256": "e758a4d01184cd3e5b2fcb6a36c2de0d4eb7f4cef1dc9b09c8187346f257f770",
       "mode": 420
     },
     "dist/pi/package.json": {

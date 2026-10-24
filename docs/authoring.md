@@ -99,8 +99,10 @@ every output. Source symlinks are rejected so packages cannot accidentally
 include files from outside the library.
 
 Only files ending in `.hbs` are rendered, and the suffix is removed in the
-output. All other skill resources are copied **byte-for-byte**, retaining the
-executable bit. Do not rename an existing script to `.hbs` unless you actually
+output. All other skill resources are copied **byte-for-byte**. Resources beginning
+with a shebang (`#!`) receive executable mode `0755`; other resources receive
+`0644`. This rule is deterministic even on Windows checkouts, which do not
+expose POSIX executable bits. Do not rename an existing script to `.hbs` unless you actually
 want its contents interpreted as a template.
 
 Host-specific skill fields go in `skillAttributes` under the source skill
