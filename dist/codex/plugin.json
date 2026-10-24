@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "devtools",
+  "version": "0.1.0",
+  "description": "A shared prompt library with native Claude Code, Codex, and Pi distributions",
+  "author": {
+    "name": "Scott McClung"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/scottmcclung/agent-marketplace"
+}

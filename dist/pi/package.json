@@ -1,0 +1,33 @@
+{
+  "name": "agent-marketplace",
+  "version": "0.1.0",
+  "description": "A shared prompt library with native Claude Code, Codex, and Pi distributions",
+  "license": "MIT",
+  "repository": "https://github.com/scottmcclung/agent-marketplace",
+  "keywords": [
+    "pi-package"
+  ],
+  "files": [
+    "agents",
+    "prompts",
+    "skills",
+    "library-version.json",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "pi": {
+    "extensions": [],
+    "skills": [
+      "./skills"
+    ],
+    "prompts": [
+      "./prompts"
+    ],
+    "themes": [],
+    "subagents": {
+      "agents": [
+        "./agents"
+      ]
+    }
+  }
+}

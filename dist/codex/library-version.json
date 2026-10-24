@@ -1,0 +1,7 @@
+{
+  "library": "agent-marketplace",
+  "version": "0.1.0",
+  "client": "codex",
+  "inputsDigest": "a5ec00030a3defe485bd60386cad41f135dd40dd50ce829ff00f4ceb5bfeac4a",
+  "agentMode": "delegation-skills"
+}

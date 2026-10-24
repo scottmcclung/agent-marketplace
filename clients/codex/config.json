@@ -1,0 +1,24 @@
+{
+  "id": "codex",
+  "agentMode": "delegation-skills",
+  "agentName": "devtools-{{name}}",
+  "agentReference": "devtools-{{name}}",
+  "commandName": "devtools-{{name}}",
+  "commandReference": "$devtools-{{name}}",
+  "skillName": "{{name}}",
+  "models": { "deep": null, "balanced": null, "fast": null, "inherit": null },
+  "tools": { "development": null, "operations": null, "uat": null },
+  "colors": { "blue": null, "green": null, "red": null, "purple": null, "cyan": null },
+  "agentDefaults": {},
+  "skillAttributes": {},
+  "values": {
+    "name": "Codex",
+    "projectInstructions": "AGENTS.md",
+    "instructionFiles": "AGENTS.md\n**/AGENTS.md\n.agents/skills/\n.codex/agents/\n.codex/config.toml",
+    "shellTool": "shell",
+    "delegateTool": "spawn_agent",
+    "taskTool": "the client's built-in task list",
+    "arguments": "the document and optional section supplied in the user's request",
+    "delegation": "Specialist identifiers here are bundled delegation SKILLS, not registered agent_type values. For each specialist, load its skill, read references/prompt.md relative to that skill's directory, and pass the role instructions verbatim plus task/context/worktree details to a fresh generic sub-agent using the available delegation tools. Do not execute specialist work in the parent, and do not pass a skill name as agent_type. Wait for each dependent step. If delegation is unavailable, stop and explain the missing capability instead of silently working in the parent. Children inherit the parent's model and permissions unless the host explicitly supports an override."
+  }
+}

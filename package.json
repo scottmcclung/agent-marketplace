@@ -1,0 +1,33 @@
+{
+  "name": "agent-marketplace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A shared prompt library with native Claude Code, Codex, and Pi distributions",
+  "type": "module",
+  "license": "MIT",
+  "author": "Scott McClung",
+  "repository": "https://github.com/scottmcclung/agent-marketplace",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "test": "node --test",
+    "verify": "npm test && npm run check",
+    "pack:release": "node scripts/package.mjs",
+    "prepack": "npm run build"
+  },
+  "files": ["dist/pi", "README.md", "LICENSE", "THIRD_PARTY_NOTICES.md"],
+  "keywords": ["pi-package", "agent-skills", "claude-code", "codex"],
+  "pi": {
+    "extensions": [],
+    "skills": ["./dist/pi/skills"],
+    "prompts": ["./dist/pi/prompts"],
+    "themes": [],
+    "subagents": { "agents": ["./dist/pi/agents"] }
+  },
+  "devDependencies": {
+    "@iarna/toml": "^2.2.5",
+    "handlebars": "^4.7.8",
+    "yaml": "^2.8.1"
+  }
+}

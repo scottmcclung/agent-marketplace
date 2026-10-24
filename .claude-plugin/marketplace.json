@@ -1,0 +1,13 @@
+{
+  "name": "agent-marketplace",
+  "owner": {
+    "name": "Scott McClung"
+  },
+  "plugins": [
+    {
+      "name": "devtools",
+      "source": "./dist/claude",
+      "description": "A shared prompt library with native Claude Code, Codex, and Pi distributions"
+    }
+  ]
+}

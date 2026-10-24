@@ -1,0 +1,28 @@
+{
+  "id": "pi",
+  "agentMode": "native",
+  "agentName": "devtools-{{name}}",
+  "agentReference": "devtools-{{name}}",
+  "commandName": "devtools-{{name}}",
+  "commandReference": "/devtools-{{name}}",
+  "skillName": "{{name}}",
+  "models": { "deep": "opus", "balanced": "sonnet", "fast": "haiku", "inherit": null },
+  "tools": {
+    "development": ["read", "write", "edit", "bash", "grep", "find", "ls"],
+    "operations": ["bash", "read", "grep", "find", "ls"],
+    "uat": ["bash", "read", "grep", "find", "ls"]
+  },
+  "colors": { "blue": "blue", "green": "green", "red": "red", "purple": "purple", "cyan": "cyan" },
+  "agentDefaults": { "prompt_mode": "append", "extensions": false, "run_in_background": false },
+  "skillAttributes": {},
+  "values": {
+    "name": "Pi",
+    "projectInstructions": "AGENTS.md and any applicable project instructions",
+    "instructionFiles": "AGENTS.md\n**/AGENTS.md\n.pi/prompts/\n.pi/skills/\n.pi/agents/\n.pi/settings.json\n.pi/subagents.json",
+    "shellTool": "bash",
+    "delegateTool": "Agent",
+    "taskTool": "the client's built-in task list",
+    "arguments": "$ARGUMENTS",
+    "delegation": "Use @tintinweb/pi-subagents' Agent tool with the prefixed specialist name. Pass run_in_background: false when a step must finish before the next starts. Do not request automatic worktree isolation for subsequent steps in an existing task worktree. UAT uses playwright-cli and shell HTTP tools such as curl; WebFetch has no direct built-in equivalent. Agent extensions are disabled by default, but explicitly preloaded skills remain available."
+  }
+}

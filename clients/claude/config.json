@@ -1,0 +1,28 @@
+{
+  "id": "claude",
+  "agentMode": "native",
+  "agentName": "{{name}}",
+  "agentReference": "devtools:{{name}}",
+  "commandName": "{{name}}",
+  "commandReference": "/devtools:{{name}}",
+  "skillName": "{{name}}",
+  "models": { "deep": "opus", "balanced": "sonnet", "fast": "haiku", "inherit": null },
+  "tools": {
+    "development": ["Read", "Write", "Edit", "Bash", "Grep", "Glob"],
+    "operations": ["Bash", "Read", "Grep", "Glob"],
+    "uat": ["Bash", "Read", "Grep", "Glob", "WebFetch"]
+  },
+  "colors": { "blue": "blue", "green": "green", "red": "red", "purple": "purple", "cyan": "cyan" },
+  "agentDefaults": {},
+  "skillAttributes": { "playwright-cli": { "allowed-tools": "Bash(playwright-cli:*)" } },
+  "values": {
+    "name": "Claude Code",
+    "projectInstructions": "AGENTS.md and the applicable CLAUDE.md",
+    "instructionFiles": "AGENTS.md\nCLAUDE.md\n**/CLAUDE.md\n.claude/commands/\n.claude/skills/\n.claude/settings.json\n.claude/settings.local.json",
+    "shellTool": "Bash",
+    "delegateTool": "Agent",
+    "taskTool": "the client's built-in task list",
+    "arguments": "$ARGUMENTS",
+    "delegation": "Use the Agent tool with the plugin-qualified specialist name. Start a new invocation for each step. Follow the parent session's approval policy; these prompts do not grant additional permissions."
+  }
+}
