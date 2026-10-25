@@ -48,6 +48,12 @@ belong in client configuration, not shared frontmatter:
 `null` is an explicit capability decision, **not** proof that the host enforces
 an equivalent restriction. Unknown profile names fail the build.
 
+For Pi, `deep`, `balanced`, and `fast` map to the bundled `devtools-router`
+virtual models. Author the router under `clients/pi/extensions/`; the build
+copies these assets byte-for-byte and includes them in its input fingerprint.
+Do not place provider-specific routing logic in the shared agent prompts.
+See [Pi model routing](pi-model-router.md) for runtime configuration.
+
 ### Command
 
 `library/commands/my-command.md.hbs`:

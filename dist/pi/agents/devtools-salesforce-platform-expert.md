@@ -4,7 +4,7 @@ extensions: false
 run_in_background: false
 name: devtools-salesforce-platform-expert
 description: Use this agent when you need expert assistance with Salesforce platform development, including writing Apex code, building Lightning Web Components (LWC), creating Visualforce pages, implementing enterprise patterns with fflib, configuring declarative features like Flows and Validation Rules, setting up security with Permission Sets and Permission Set Groups, designing Flexipages, implementing integrations, or architecting scalable solutions following Salesforce best practices and governor limits.
-model: opus
+model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: purple
 ---

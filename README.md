@@ -15,14 +15,14 @@ library/                       # EDIT: shared prompt documents and skill assets
 clients/                       # EDIT: host value maps and output templates
   claude/{config.json,templates/}
   codex/{config.json,templates/}
-  pi/{config.json,templates/}
+  pi/{config.json,templates/,extensions/}
 scripts/                       # Node.js build / validation tooling
 .claude-plugin/marketplace.json # GENERATED: Claude catalog
 .agents/plugins/marketplace.json# GENERATED: Codex catalog
 dist/                          # GENERATED and committed for native Git installs
   claude/                      # devtools plugin: native agents + commands + skills
   codex/                       # devtools plugin: delegation/workflow skills
-  pi/                          # Pi package: agents + prompt templates + skills
+  pi/                          # Pi package: router + agents + prompts + skills
   manifest.json                # version, input fingerprint, file checksums
 ```
 
@@ -84,6 +84,13 @@ Restart Pi. `/agents` should show package agents such as
 etc. Package agents require a version of `@tintinweb/pi-subagents` supporting
 `pi.subagents.agents`; the extension and its package-agent discovery must be
 enabled. Installing it as a transitive npm dependency is **not** sufficient.
+
+The model router is bundled with this package. Pi agents use
+`devtools-router/deep`, `devtools-router/balanced`, and `devtools-router/fast`
+instead of provider-specific model names. The router selects from ordered
+physical-model preferences using Pi's credential handling. No separate router
+installation is needed. See [Pi model routing](docs/pi-model-router.md) for
+configuration, caching, and authentication limits.
 
 ### Codex CLI
 
@@ -172,9 +179,10 @@ Skills: `playwright-cli`, `pandoc-converter`, `tailscale-serve-sidecar`.
   The imported Pandoc helper scripts additionally require **Python 3**. These
   are preserved skill assets, not this project's build tooling.
 - Container workflows require Docker/Compose; GitHub operations may need `gh`.
-- Pi model profiles use `opus`, `sonnet`, and `haiku`; configure available
-  providers or change `clients/pi/config.json` before releasing. Codex defaults
-  to model inheritance rather than inventing an equivalent OpenAI model.
+- Pi model profiles use bundled virtual models. They require a Pi version with
+  `registerVirtualModel` support and a subagent implementation that shares the
+  parent's model runtime. Configure physical-model preferences as described in
+  [Pi model routing](docs/pi-model-router.md). Codex defaults to model inheritance.
 - Prompts do not enforce a sandbox. Tool lists, shell access, approvals, skill
   permissions, and worktree behavior differ between hosts. Review all prompts
   and use your client's permission controls. Imported workflows include Git

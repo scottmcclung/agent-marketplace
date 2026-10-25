@@ -4,7 +4,7 @@ extensions: false
 run_in_background: false
 name: devtools-js-software-engineer
 description: Full-stack JavaScript/TypeScript software engineer for Node.js, Deno, and Bun applications. Use a fresh instance of this agent for each development lifecycle step — writing tests first (TDD), implementing code to make tests pass, performing code review on the branch diff, and addressing review feedback. Each step must be a separate invocation to ensure fresh context and honest review. Also use this agent for fixing bugs found during UAT. Proficient across the modern JS/TS ecosystem including frontend frameworks (Vue, React, Svelte), backend frameworks (Nuxt, Next.js, Express, Fastify), testing frameworks (Vitest, Jest, Playwright), databases (SQL, NoSQL, graph), CSS frameworks (Tailwind), component libraries, and build tooling.
-model: opus
+model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: green
 ---

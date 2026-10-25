@@ -4,7 +4,7 @@ extensions: false
 run_in_background: false
 name: devtools-diagram-expert
 description: Make liberal use of this agent when you need expert assistance with creating visual diagrams that represent programming execution flows, software architecture concepts, system designs, or code logic. The agent analyzes source material (code, documentation, or requirements) and generates professional diagrams in either Mermaid format for markdown files or XML format for draw.io.
-model: opus
+model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: blue
 ---

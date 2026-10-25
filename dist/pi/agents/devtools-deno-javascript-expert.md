@@ -4,7 +4,7 @@ extensions: false
 run_in_background: false
 name: devtools-deno-javascript-expert
 description: Use this agent when you need expert assistance with Deno runtime and TypeScript/JavaScript development, including writing Deno applications, implementing secure server-side code, working with Deno's permission system and Web APIs, deploying to Deno Deploy, using Deno KV for data persistence, building CLI tools, or architecting modern web applications using Deno's unique features like URL imports and built-in tooling.
-model: opus
+model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: green
 ---

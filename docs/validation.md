@@ -1,4 +1,30 @@
-# Initial validation
+# Validation
+
+## Pi model router
+
+- `npm run verify`: 78 tests passed and all 118 generated files matched sources.
+- Source and generated `.mjs` entry points loaded through Pi 1.4.0's actual
+  extension loader with no loader errors. All three virtual profiles were
+  selectable.
+- A child SDK session sharing the parent's `ModelRuntime` retained virtual-model
+  routing with zero loaded child extensions.
+- In-memory providers exercised six successful requests across parent and child
+  sessions. The preferred provider's synthetic OAuth credential resolution failed;
+  the fallback responded successfully. Eligibility checks were cached across
+  parent and child requests. Neither session messages nor the physical request
+  context contained the authentication error.
+- An offline standalone `npm pack --dry-run --ignore-scripts` included both the
+  extension and its JSON preferences.
+
+These checks used isolated temporary homes, empty inherited environments, and
+network guards. They made no real provider requests, used no personal credentials,
+and performed no installations. The child test exercised the SDK runtime-sharing
+pattern used by pi-subagents 0.22.0, not its complete tool runner. It does not
+establish that default model candidates are registered or accessible in a
+consumer's environment. Ordinary terminal provider errors are not guaranteed to
+trigger fallback.
+
+## Initial distribution validation
 
 The initial 0.1.0 implementation was checked locally with Node.js 26.12.0 and
 npm 11.20.0. CI additionally targets Node.js 22/24 on Linux and Windows.

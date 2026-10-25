@@ -4,7 +4,7 @@ extensions: false
 run_in_background: false
 name: devtools-uat-specialist
 description: User Acceptance Testing specialist. Use this agent to functionally validate that integrated work behaves correctly from an end-user perspective. Exercises user journeys through running applications using browser automation, API calls, CLI tools, and direct service interaction. Spins up environments (Docker, dev servers), navigates UIs, verifies workflows end-to-end, and documents bugs found with clear reproduction steps.
-model: sonnet
+model: devtools-router/balanced
 tools: bash, read, grep, find, ls
 color: red
 skills:

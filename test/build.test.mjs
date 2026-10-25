@@ -63,6 +63,70 @@ test('Pi uses explicit package-agent discovery and mapped specialist names', asy
   assert.match(text('dist/pi/prompts/devtools-work.md'), /devtools-js-software-engineer/);
 });
 
+test('root Pi package declares the bundled router extension and includes its distribution', async () => {
+  const pkg = JSON.parse(await fs.readFile(path.join(root, 'package.json'), 'utf8'));
+  assert.deepEqual(pkg.pi.extensions, ['./dist/pi/extensions/model-router.mjs']);
+  assert.ok(pkg.files.includes('dist/pi') || pkg.files.includes('dist/pi/extensions'), 'Root package files must include the extensions directory');
+});
+
+test('standalone Pi package declares its relative router extension and includes extensions', () => {
+  const pkg = json('dist/pi/package.json');
+  assert.deepEqual(pkg.pi.extensions, ['./extensions/model-router.mjs']);
+  assert.ok(pkg.files.includes('extensions'), 'Standalone package files must include extensions');
+});
+
+test('Pi router source is bundled byte-for-byte', async () => {
+  const source = await fs.readFile(path.join(root, 'clients/pi/extensions/model-router.mjs'));
+  assert.ok(built.has('dist/pi/extensions/model-router.mjs'), 'Missing bundled router');
+  assert.deepEqual(built.get('dist/pi/extensions/model-router.mjs').bytes, source);
+});
+
+test('opaque Pi extension JavaScript is copied without evaluating template syntax', async t => {
+  const temp = await fixture(t);
+  const source = Buffer.from('export const literal = "{{client.missing}} \\u2603";\r\n');
+  await fs.mkdir(path.join(temp, 'clients/pi/extensions'), { recursive: true });
+  await fs.writeFile(path.join(temp, 'clients/pi/extensions/model-router.mjs'), source);
+  const outputs = await generate(temp);
+  assert.ok(outputs.has('dist/pi/extensions/model-router.mjs'), 'Missing bundled router');
+  assert.deepEqual(outputs.get('dist/pi/extensions/model-router.mjs').bytes, source);
+});
+
+test('all Pi extension resources are opaque inputs included in the global fingerprint', async t => {
+  const temp = await fixture(t);
+  const resource = 'clients/pi/extensions/nested/resource.bin';
+  const opaque = Buffer.from([0, 255, 13, 10, 123, 123]);
+  await fs.mkdir(path.dirname(path.join(temp, resource)), { recursive: true });
+  await fs.writeFile(path.join(temp, resource), opaque);
+  const outputs = await generate(temp);
+  assert.deepEqual(outputs.get('dist/pi/extensions/nested/resource.bin').bytes, opaque);
+  let digest = JSON.parse(outputs.get('dist/manifest.json').bytes).inputsDigest;
+  for (const name of ['model-router.mjs', 'model-router.json']) {
+    const original = await fs.readFile(path.join(temp, 'clients/pi/extensions', name));
+    assert.deepEqual(outputs.get(`dist/pi/extensions/${name}`).bytes, original);
+    const changed = Buffer.concat([original, Buffer.from('\n')]);
+    await fs.writeFile(path.join(temp, 'clients/pi/extensions', name), changed);
+    const next = await generate(temp);
+    assert.deepEqual(next.get(`dist/pi/extensions/${name}`).bytes, changed);
+    const nextDigest = JSON.parse(next.get('dist/manifest.json').bytes).inputsDigest;
+    assert.notEqual(nextDigest, digest, `${name} must affect the input fingerprint`);
+    digest = nextDigest;
+  }
+});
+
+test('Pi profile mappings and every generated specialist use devtools-router virtual models', async () => {
+  const config = JSON.parse(await fs.readFile(path.join(root, 'clients/pi/config.json'), 'utf8'));
+  for (const profile of ['fast', 'balanced', 'deep']) {
+    assert.equal(config.models[profile], `devtools-router/${profile}`);
+  }
+  assert.equal(config.models.inherit, null);
+  for (const file of await walk(path.join(root, 'library/agents'))) {
+    const source = parseDocument(await fs.readFile(path.join(root, 'library/agents', file), 'utf8'));
+    const profile = source.meta.modelProfile ?? 'inherit';
+    const agent = doc(`dist/pi/agents/devtools-${source.meta.name}.md`);
+    assert.equal(agent.meta.model, profile === 'inherit' ? undefined : `devtools-router/${profile}`, source.meta.name);
+  }
+});
+
 test('Pi workflows do not leak Claude plugin identifiers or WebFetch declarations', () => {
   assert.doesNotMatch(text('dist/pi/prompts/devtools-work.md'), /devtools:/);
   assert.doesNotMatch(doc('dist/pi/agents/devtools-uat-specialist.md').meta.tools, /WebFetch/);

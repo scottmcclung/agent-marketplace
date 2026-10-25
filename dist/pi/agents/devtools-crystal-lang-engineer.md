@@ -4,7 +4,7 @@ extensions: false
 run_in_background: false
 name: devtools-crystal-lang-engineer
 description: Crystal language engineer for writing, debugging, and optimizing Crystal applications. Use a fresh instance for each lifecycle step — writing specs first (TDD), implementing code to make specs pass, addressing review feedback, and fixing bugs found in UAT. Pair with `devtools-crystal-code-reviewer` for diff review; do not have this agent review its own work. Covers Crystal's type system, macros, fibers/channels, C bindings, shards, and the Kemal/Lucky/Athena web ecosystem.
-model: opus
+model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: blue
 ---

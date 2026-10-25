@@ -20,9 +20,11 @@ library/ + clients/ + package.json
  marketplace marketplace  Git/npm source
 ```
 
-There is deliberately no install hook, machine-sync agent, global filesystem
-mutation, model call, external network request, or runtime Node dependency in
-the generated prompt packages. Build dependencies are devDependencies.
+There is no install hook, machine-sync agent, global filesystem mutation, or
+third-party runtime Node dependency in the generated packages. Build dependencies
+are devDependencies. The Pi package includes a virtual-model extension that uses
+Pi's credential handling at runtime; OAuth resolution can contact a provider to
+refresh a token. Building and testing the package makes no model requests.
 Imported skill scripts may have their own prerequisites.
 
 ## Generated ownership
@@ -39,7 +41,8 @@ a build. CI checks them before a release.
 
 Each target includes `library-version.json`: library version, client, agent
 mode, and an input SHA-256 fingerprint. The fingerprint includes shared sources,
-client configurations/templates, compiler code, package metadata, and the license.
+client configurations/templates and extension assets, compiler code, package
+metadata, and the license.
 It intentionally excludes timestamps and the current commit SHA to avoid
 self-referential or non-reproducible builds. `dist/manifest.json` records output
 checksums and executable modes (excluding itself).
@@ -68,6 +71,11 @@ marketplace versions separately only for deliberate testing, not normal use.
   discovers from Pi-installed packages.
 - Agents are prefixed `devtools-` to avoid collisions in Pi's flat namespace.
 - Commands become prompt templates; skills remain skills.
+- The same package declares its model router in `pi.extensions`. Agent model
+  profiles map to `devtools-router/deep`, `devtools-router/balanced`, and
+  `devtools-router/fast`. Ordered physical-model preferences and the credential
+  cache live in the extension, not in shared prompts or the subagent extension.
+  See [Pi model routing](pi-model-router.md).
 - The consumer installs `@tintinweb/pi-subagents` as its own Pi package. It is
   not bundled or assumed to load just because npm resolves it transitively.
 - Agent defaults append to the parent's system prompt, disable extra

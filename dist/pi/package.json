@@ -11,11 +11,14 @@
     "agents",
     "prompts",
     "skills",
+    "extensions",
     "library-version.json",
     "LICENSE"
   ],
   "pi": {
-    "extensions": [],
+    "extensions": [
+      "./extensions/model-router.mjs"
+    ],
     "skills": [
       "./skills"
     ],

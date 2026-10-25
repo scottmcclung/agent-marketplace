@@ -4,7 +4,7 @@ extensions: false
 run_in_background: false
 name: devtools-crystal-code-reviewer
 description: Crystal code reviewer. Analyzes a diff or a set of changes and produces structured review feedback — does not modify code. Use after `devtools-crystal-lang-engineer` writes or edits code; the engineer then addresses the comments. Enforces explicit type annotations, Crystal's object-oriented idioms (against procedural drift from Go/JS/Python habits), and Crystal-specific footguns (`.not_nil!`, `.as(T)`, fiber-blocking calls, newly defined project-specific macros).
-model: sonnet
+model: devtools-router/balanced
 tools: read, write, edit, bash, grep, find, ls
 color: red
 ---

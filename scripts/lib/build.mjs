@@ -220,6 +220,10 @@ export async function generate(root) {
     }
   }
 
+  for (const file of await walk(path.join(root, 'clients/pi/extensions'))) {
+    emit(`dist/pi/extensions/${file}`, await input(`clients/pi/extensions/${file}`));
+  }
+
   const identity = { name: 'devtools', version: pkg.version, description: pkg.description, author: typeof pkg.author === 'string' ? { name: pkg.author } : pkg.author, license: pkg.license, repository: pkg.repository };
   emit('dist/claude/.claude-plugin/plugin.json', json(identity));
   emit('.claude-plugin/marketplace.json', json({ name: pkg.name, owner: identity.author, plugins: [{ name: identity.name, source: './dist/claude', description: identity.description }] }));
@@ -228,7 +232,7 @@ export async function generate(root) {
     name: pkg.name, interface: { displayName: 'Agent Marketplace' },
     plugins: [{ name: identity.name, source: { source: 'local', path: './dist/codex' }, policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' }, category: 'Productivity' }]
   }));
-  emit('dist/pi/package.json', json({ name: pkg.name, version: pkg.version, description: pkg.description, license: pkg.license, repository: pkg.repository, keywords: ['pi-package'], files: ['agents', 'prompts', 'skills', 'library-version.json', 'LICENSE'], pi: { extensions: [], skills: ['./skills'], prompts: ['./prompts'], themes: [], subagents: { agents: ['./agents'] } } }));
+  emit('dist/pi/package.json', json({ name: pkg.name, version: pkg.version, description: pkg.description, license: pkg.license, repository: pkg.repository, keywords: ['pi-package'], files: ['agents', 'prompts', 'skills', 'extensions', 'library-version.json', 'LICENSE'], pi: { extensions: ['./extensions/model-router.mjs'], skills: ['./skills'], prompts: ['./prompts'], themes: [], subagents: { agents: ['./agents'] } } }));
   for (const file of ['LICENSE']) {
     const bytes = await input(file);
     for (const id of CLIENTS) emit(`dist/${id}/${file}`, bytes);

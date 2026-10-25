@@ -1,7 +1,7 @@
 {
   "library": "agent-marketplace",
   "version": "0.1.0",
-  "inputsDigest": "158e8e872e0e2e2c7578f6a13dbbfab366f350cec0935ad3d60ec9425580c1e5",
+  "inputsDigest": "acc6114391fc2c2a3ec0622767190cc62351c72b4001cbabde5168edfe45bc9d",
   "counts": {
     "agents": 10,
     "commands": 3,
@@ -77,7 +77,7 @@
       "mode": 420
     },
     "dist/claude/library-version.json": {
-      "sha256": "41425ae4ac463b957a649f16ad47edf5c225543d1970be10ef9b8a31852796f2",
+      "sha256": "3206ee65f8743ad18397a7129b3c056ee902a39cd3c3f590336992e77fd58013",
       "mode": 420
     },
     "dist/claude/skills/pandoc-converter/SKILL.md": {
@@ -181,7 +181,7 @@
       "mode": 420
     },
     "dist/codex/library-version.json": {
-      "sha256": "da2046e406441dc3644013a19aebf9dd3501cc71e856bca45c095514a15c3a53",
+      "sha256": "214ad5c6675289a3fdb93212946c25a9df665eec55085c1cae1274b7619b0330",
       "mode": 420
     },
     "dist/codex/plugin.json": {
@@ -353,31 +353,31 @@
       "mode": 420
     },
     "dist/pi/agents/devtools-crystal-code-reviewer.md": {
-      "sha256": "699c6d76a20352b0314528d12b5d9638083f68c9cae6a1960e811b7ae8dc31a8",
+      "sha256": "ba100f9002b900526747516f87121abdec3ab7e49441208592f3008596241d8e",
       "mode": 420
     },
     "dist/pi/agents/devtools-crystal-lang-engineer.md": {
-      "sha256": "59251f051e081944dd77ed1db1ba831882063dea873737b93a49dbb4f925901f",
+      "sha256": "35a0253733431c504ab254656cf923b5468f28bb2ca28066dbf1af68a197d929",
       "mode": 420
     },
     "dist/pi/agents/devtools-deno-javascript-expert.md": {
-      "sha256": "4cc13a6950c588fb77698642c04c703bfc4ad30d25dcb227dd26c2f3a126842c",
+      "sha256": "09a9cab27bfe917ab791200cf2ec4e07b0ddd5c86e38aa1cf894036dbab52c1b",
       "mode": 420
     },
     "dist/pi/agents/devtools-dev-ops-engineer.md": {
-      "sha256": "9696beb1ccc80757fc043238d645e557491b11de2ce5e2c535fe94793cd09e3d",
+      "sha256": "53661ef3ba700dce680d783151a2d7a4f477d2ec40a72967596aae553b8786bc",
       "mode": 420
     },
     "dist/pi/agents/devtools-diagram-expert.md": {
-      "sha256": "26f69f71a19b5a892fbdcb9318781f2af30d4684b3bab73c0fce6de9c9f64fd8",
+      "sha256": "678d76e74c157db54c028a9c7ef62d3178bb59013930ebe3530f09415ab3d007",
       "mode": 420
     },
     "dist/pi/agents/devtools-js-software-engineer.md": {
-      "sha256": "efb48333a95fa4bff895fcfe7f189da2ba11c0d4663095aaf2448c47d129b2fe",
+      "sha256": "e1be7617ee325f8c8e9c532e5112a3e75d47ca2b9eb48fc5c859b7f5b8155489",
       "mode": 420
     },
     "dist/pi/agents/devtools-laravel-php-expert.md": {
-      "sha256": "5237e009cce2ba7493fb606277059e7df35ef356a3d7233ad435ad662cded667",
+      "sha256": "93c4e5afdb4ab18340e91590a718821adaa9fef6f23bae59e696a656a9fd52eb",
       "mode": 420
     },
     "dist/pi/agents/devtools-salesforce-apex-test-engineer.md": {
@@ -385,19 +385,27 @@
       "mode": 420
     },
     "dist/pi/agents/devtools-salesforce-platform-expert.md": {
-      "sha256": "844a66cce5bd6a90fccca258ed38f887b3a2cdfb17a09ad005c82bf78550e54f",
+      "sha256": "0e2ee09b1ada00ad28da2cc2519e9f38e196d7a416b0c159410be06f2c36dd97",
       "mode": 420
     },
     "dist/pi/agents/devtools-uat-specialist.md": {
-      "sha256": "257de6bb0468df447291bdcdb6288b20fd674fe97f8b4820ea82db20ef6a0a36",
+      "sha256": "5ba6c0b30727a2c172f68818d60b6cbfc2659a37b068f89d37eb0485e7d13d18",
+      "mode": 420
+    },
+    "dist/pi/extensions/model-router.json": {
+      "sha256": "cdecd11a5f1d4e01576fc9c9e96154c9514f687f93b46d6d22bfce7d90e1aaa2",
+      "mode": 420
+    },
+    "dist/pi/extensions/model-router.mjs": {
+      "sha256": "e55bf1808a5821049b99e0b7497ef9ea17f9deb349d540a42115b0ea8d702fba",
       "mode": 420
     },
     "dist/pi/library-version.json": {
-      "sha256": "cac90cc298ef86650c08b8f6dce840805161af3279297c15a107d74de87fa53d",
+      "sha256": "ca7a697a2096f046d3b12ec84bb95fc0aca94fc921ebe90099be05bfef641be2",
       "mode": 420
     },
     "dist/pi/package.json": {
-      "sha256": "419f9ab03a312259a4299d9f8953fef981e311c8207f44d83b7647db54a57b25",
+      "sha256": "64d34f354749d15c9108e60a5a5ebc11df38b39f97746f8f99dc2f51630b4a35",
       "mode": 420
     },
     "dist/pi/prompts/devtools-plan.md": {

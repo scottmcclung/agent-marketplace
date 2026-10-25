@@ -6,7 +6,7 @@
   "commandName": "devtools-{{name}}",
   "commandReference": "/devtools-{{name}}",
   "skillName": "{{name}}",
-  "models": { "deep": "opus", "balanced": "sonnet", "fast": "haiku", "inherit": null },
+  "models": { "deep": "devtools-router/deep", "balanced": "devtools-router/balanced", "fast": "devtools-router/fast", "inherit": null },
   "tools": {
     "development": ["read", "write", "edit", "bash", "grep", "find", "ls"],
     "operations": ["bash", "read", "grep", "find", "ls"],

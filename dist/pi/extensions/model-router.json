@@ -1,0 +1,22 @@
+{
+  "profiles": {
+    "fast": [
+      "anthropic/claude-haiku-5-5",
+      "openai/gpt-6-luna",
+      "openai-codex/gpt-6-luna",
+      "ollama/qwen3.8"
+    ],
+    "balanced": [
+      "anthropic/claude-sonnet-4-6",
+      "openai/gpt-6-luna",
+      "openai-codex/gpt-6-luna",
+      "ollama/qwen3.8"
+    ],
+    "deep": [
+      "anthropic/claude-opus-4-6",
+      "openai/gpt-6.1-sol",
+      "openai-codex/gpt-6.1-sol",
+      "ollama/qwen3.8"
+    ]
+  }
+}

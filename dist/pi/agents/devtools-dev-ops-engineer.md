@@ -4,7 +4,7 @@ extensions: false
 run_in_background: false
 name: devtools-dev-ops-engineer
 description: Git workflow and project lifecycle specialist. Use this agent for repository operations including creating and removing git worktrees, branching, merging, rebasing, resolving merge conflicts, cleaning up branches, and managing issue tracker state (claiming, updating, closing issues). Also use this agent for task setup work — creating beads issues, setting up dependencies, and organizing work before development begins. Also handles Docker and container orchestration tasks, CI/CD pipeline operations, and environment setup/teardown.
-model: haiku
+model: devtools-router/fast
 tools: bash, read, grep, find, ls
 color: blue
 ---

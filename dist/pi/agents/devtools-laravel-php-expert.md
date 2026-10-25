@@ -16,7 +16,7 @@ description: |-
   **Capabilities**: Building Laravel applications, authentication/authorization, Eloquent ORM, RESTful/GraphQL APIs, queues/jobs, events/broadcasting, testing, Livewire, Inertia.js, deployment, and the full Laravel ecosystem.
 
   **When NOT to use**: Plain PHP without Laravel, WordPress/Drupal CMS, Symfony-only projects.
-model: opus
+model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: red
 ---
