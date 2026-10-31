@@ -1,0 +1,9 @@
+{
+  "name": "statusline",
+  "version": "0.1.0",
+  "description": "Shows the repository, today's commits, the model, context usage, 30-day and block cost, and the rate-limit reset time under the prompt.",
+  "author": {
+    "name": "Scott McClung"
+  },
+  "types": "./types/index.d.ts"
+}

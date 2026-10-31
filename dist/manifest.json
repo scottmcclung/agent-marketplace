@@ -1,13 +1,13 @@
 {
   "library": "agent-marketplace",
   "version": "0.1.0",
-  "inputsDigest": "66e06fffb2f1283194f97ff21f3673fe4234e4bb00144baf378e93676b7202d6",
+  "inputsDigest": "e68a6d32b32b63c6bb1eb721274c0c9b33d9a9e08a11cb93e72144df04d5b5fa",
   "counts": {
     "agents": 10,
     "commands": 3,
     "skills": 3,
     "features": {
-      "claude": 0,
+      "claude": 1,
       "pi": 1
     }
   },
@@ -17,7 +17,31 @@
       "mode": 420
     },
     ".claude-plugin/marketplace.json": {
-      "sha256": "b634c9446e6b96dc005628a6e92042215a667caff8ae8624afef2a841d521e32",
+      "sha256": "46ee538ba94ad97bb0699dc51f0d53ebd5814d478cbde68a283db3ca1152b9a6",
+      "mode": 420
+    },
+    "dist/claude-plugins/statusline/.claude-plugin/plugin.json": {
+      "sha256": "7bece8178208333519834a2bfd5f571772e68087a50f73b0eb8b4ad022ffda1f",
+      "mode": 420
+    },
+    "dist/claude-plugins/statusline/hooks/hooks.json": {
+      "sha256": "d842d789476d67282d0f04b7e5fdc68a3d981ccec65dd79cfa2d11eed13fb828",
+      "mode": 420
+    },
+    "dist/claude-plugins/statusline/hooks/ledger.ts": {
+      "sha256": "889f9435606c7b6321925919a4d543c6bfb3aa5d88860b4a51e6e8f3c1400603",
+      "mode": 420
+    },
+    "dist/claude-plugins/statusline/hooks/register.tsx": {
+      "sha256": "e4afd8a31bc8986554e007eae787774bc033467b7b71668d5d5da467c2b4634c",
+      "mode": 420
+    },
+    "dist/claude-plugins/statusline/tsconfig.json": {
+      "sha256": "4087cf0ba92fde503ed0e7c56f37bcb26ad0c085873f10219d0336c0f19b5a8f",
+      "mode": 420
+    },
+    "dist/claude-plugins/statusline/types/index.d.ts": {
+      "sha256": "173715f25f2aa9622a0627821ed91a6a0ac08814a2c764236c834f69701055ec",
       "mode": 420
     },
     "dist/claude/.claude-plugin/plugin.json": {
@@ -81,7 +105,7 @@
       "mode": 420
     },
     "dist/claude/library-version.json": {
-      "sha256": "b3f88736da2d5fdccedbbf0353474cd4ba8d0f77f0bd28777a642159326f87a0",
+      "sha256": "d38aef181a02e32bc9841bfafdaa0ad4107bd0a3654a89ae5eb6b666825c9233",
       "mode": 420
     },
     "dist/claude/skills/pandoc-converter/SKILL.md": {
@@ -185,7 +209,7 @@
       "mode": 420
     },
     "dist/codex/library-version.json": {
-      "sha256": "c654f82d35846fbeb1077a4efb31cabe9df6f56bca5dd931b2b58d9e9249af24",
+      "sha256": "544746e6a7bcc385333b2d43a887060b8ff013a5bee376f052d3bb7bd001bb2d",
       "mode": 420
     },
     "dist/codex/plugin.json": {
@@ -405,7 +429,7 @@
       "mode": 420
     },
     "dist/pi/library-version.json": {
-      "sha256": "3a23ab9e9df041fd076ef6a0e91d22fc2887d0968fb7cde5ee8c93fc1fcd6f2c",
+      "sha256": "acb2709c561b155cfe98420ffa7520a6b4938ae5eb8c6b8e9dfa36ac1956dc34",
       "mode": 420
     },
     "dist/pi/package.json": {

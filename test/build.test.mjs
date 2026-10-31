@@ -1,9 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import { globSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import YAML from 'yaml';
 import TOML from '@iarna/toml';
 import { generate, render, parseDocument, walk, check, write } from '../scripts/lib/build.mjs';
@@ -28,8 +30,8 @@ async function changeJson(temp, file, change) {
   await fs.writeFile(path.join(temp, file), JSON.stringify(value));
 }
 
-test('imports all ten agents, three commands, three skills, and one Pi feature', () => {
-  assert.deepEqual(json('dist/manifest.json').counts, { agents: 10, commands: 3, skills: 3, features: { claude: 0, pi: 1 } });
+test('imports all ten agents, three commands, three skills, one Claude feature, and one Pi feature', () => {
+  assert.deepEqual(json('dist/manifest.json').counts, { agents: 10, commands: 3, skills: 3, features: { claude: 1, pi: 1 } });
 });
 
 test('all native distributions share the same version and input fingerprint', async () => {
@@ -120,36 +122,36 @@ test('the build no longer reads clients/pi/extensions', async t => {
 
 test('Pi features without pi/index.mjs fail and name the feature', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline', { harnesses: ['pi'] });
+  const dir = await addFeature(temp, 'sample', { harnesses: ['pi'] });
   await fs.rename(path.join(dir, 'pi/index.mjs'), path.join(dir, 'pi/main.mjs'));
-  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /index\.mjs/.test(error.message));
+  await assert.rejects(generate(temp), error => /sample/.test(error.message) && /index\.mjs/.test(error.message));
 });
 
 test('opaque Pi feature JavaScript is copied without evaluating template syntax', async t => {
   const temp = await fixture(t);
   const source = Buffer.from('export const literal = "{{client.missing}} \\u2603";\r\n');
-  const dir = await addFeature(temp, 'statusline', { harnesses: ['pi'] });
+  const dir = await addFeature(temp, 'sample', { harnesses: ['pi'] });
   await fs.writeFile(path.join(dir, 'pi/index.mjs'), source);
   const outputs = await generate(temp);
-  assert.ok(outputs.has('dist/pi/extensions/statusline/index.mjs'), 'Missing bundled feature extension');
-  assert.deepEqual(outputs.get('dist/pi/extensions/statusline/index.mjs').bytes, source);
-  assert.equal(outputs.get('dist/pi/extensions/statusline/index.mjs').mode, 0o644);
+  assert.ok(outputs.has('dist/pi/extensions/sample/index.mjs'), 'Missing bundled feature extension');
+  assert.deepEqual(outputs.get('dist/pi/extensions/sample/index.mjs').bytes, source);
+  assert.equal(outputs.get('dist/pi/extensions/sample/index.mjs').mode, 0o644);
 });
 
 test('every Pi feature resource is an opaque input included in the global fingerprint', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline', { harnesses: ['pi'] });
+  const dir = await addFeature(temp, 'sample', { harnesses: ['pi'] });
   const opaque = Buffer.from([0, 255, 13, 10, 123, 123]);
   await fs.mkdir(path.join(dir, 'pi/nested'), { recursive: true });
   await fs.writeFile(path.join(dir, 'pi/nested/resource.bin'), opaque);
   await fs.writeFile(path.join(dir, 'pi/nested/tool.sh'), '#!/bin/sh\necho {{x}}\n');
   const outputs = await generate(temp);
-  assert.deepEqual(outputs.get('dist/pi/extensions/statusline/nested/resource.bin').bytes, opaque);
-  assert.equal(outputs.get('dist/pi/extensions/statusline/nested/resource.bin').mode, 0o644);
-  assert.equal(outputs.get('dist/pi/extensions/statusline/nested/tool.sh').mode, 0o755, 'shebang files must be executable');
+  assert.deepEqual(outputs.get('dist/pi/extensions/sample/nested/resource.bin').bytes, opaque);
+  assert.equal(outputs.get('dist/pi/extensions/sample/nested/resource.bin').mode, 0o644);
+  assert.equal(outputs.get('dist/pi/extensions/sample/nested/tool.sh').mode, 0o755, 'shebang files must be executable');
   let digest = JSON.parse(outputs.get('dist/manifest.json').bytes).inputsDigest;
   const files = [
-    ...['index.mjs', 'nested/resource.bin', 'nested/tool.sh'].map(file => ['statusline', file]),
+    ...['index.mjs', 'nested/resource.bin', 'nested/tool.sh'].map(file => ['sample', file]),
     ...['index.mjs', 'model-router.json'].map(file => ['model-router', file])
   ];
   for (const [name, file] of files) {
@@ -374,8 +376,8 @@ const digestOf = outputs => JSON.parse(outputs.get('dist/manifest.json').bytes).
 
 test('feature names must match their folder', async t => {
   const temp = await fixture(t);
-  await addFeature(temp, 'statusline', { manifest: { name: 'status-line', description: 'x' } });
-  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /folder/.test(error.message));
+  await addFeature(temp, 'sample', { manifest: { name: 'status-line', description: 'x' } });
+  await assert.rejects(generate(temp), error => /sample/.test(error.message) && /folder/.test(error.message));
 });
 
 test('feature names must be lowercase hyphenated identifiers', async t => {
@@ -392,25 +394,25 @@ test('feature names must not collide with devtools', async t => {
 
 test('features without a harness folder fail', async t => {
   const temp = await fixture(t);
-  await addFeature(temp, 'statusline', { harnesses: [] });
-  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /harness/.test(error.message));
+  await addFeature(temp, 'sample', { harnesses: [] });
+  await assert.rejects(generate(temp), error => /sample/.test(error.message) && /harness/.test(error.message));
 });
 
 test('unknown feature harness folders fail', async t => {
   const temp = await fixture(t);
-  await addFeature(temp, 'statusline', { harnesses: ['claude', 'claud'] });
-  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /claud\b/.test(error.message) && /unknown harness/i.test(error.message));
+  await addFeature(temp, 'sample', { harnesses: ['claude', 'claud'] });
+  await assert.rejects(generate(temp), error => /sample/.test(error.message) && /claud\b/.test(error.message) && /unknown harness/i.test(error.message));
 });
 
 test('codex feature folders fail as unsupported', async t => {
   const temp = await fixture(t);
-  await addFeature(temp, 'statusline', { harnesses: ['claude', 'codex'] });
-  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /codex features are not supported yet/.test(error.message));
+  await addFeature(temp, 'sample', { harnesses: ['claude', 'codex'] });
+  await assert.rejects(generate(temp), error => /sample/.test(error.message) && /codex features are not supported yet/.test(error.message));
 });
 
 test('every feature file byte is part of the input fingerprint', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline', { harnesses: ['claude', 'pi'] });
+  const dir = await addFeature(temp, 'sample', { harnesses: ['claude', 'pi'] });
   let digest = digestOf(await generate(temp));
   assert.notEqual(digest, digestOf(built), 'adding a feature must change the input fingerprint');
   for (const file of ['feature.json', 'claude/.claude-plugin/plugin.json', 'pi/index.mjs']) {
@@ -419,14 +421,14 @@ test('every feature file byte is part of the input fingerprint', async t => {
     const changed = Buffer.concat([original, Buffer.from(' ')]);
     await fs.writeFile(path.join(dir, file), changed);
     const next = digestOf(await generate(temp));
-    assert.notEqual(next, digest, `features/statusline/${file} must affect the input fingerprint`);
+    assert.notEqual(next, digest, `features/sample/${file} must affect the input fingerprint`);
     digest = next;
   }
 });
 
 test('adding or removing a feature changes the fingerprint and fails check', async t => {
   const temp = await fixture(t);
-  await addFeature(temp, 'statusline');
+  await addFeature(temp, 'sample');
   const before = await generate(temp);
   await write(temp, before);
   assert.deepEqual(await check(temp, before), []);
@@ -446,17 +448,22 @@ test('output without a features folder only drops feature output', async t => {
   await fs.rm(path.join(temp, 'features'), { recursive: true, force: true });
   const outputs = await generate(temp);
   // The manifest and library-version files carry inputsDigest and checksums over all inputs, so they differ for reasons outside this comparison.
-  const owned = file => file.startsWith('dist/pi/extensions/') || file === 'dist/manifest.json' || /^dist\/[^/]+\/library-version\.json$/.test(file);
-  assert.deepEqual([...outputs.keys()].filter(file => file.startsWith('dist/pi/extensions/')), []);
+  const owned = file => file.startsWith('dist/pi/extensions/') || file.startsWith('dist/claude-plugins/') || file === '.claude-plugin/marketplace.json' || file === 'dist/manifest.json' || /^dist\/[^/]+\/library-version\.json$/.test(file);
+  assert.deepEqual([...outputs.keys()].filter(file => file.startsWith('dist/pi/extensions/') || file.startsWith('dist/claude-plugins/')), []);
+  const catalog = JSON.parse(outputs.get('.claude-plugin/marketplace.json').bytes);
+  const { plugins: builtPlugins, ...builtRest } = json('.claude-plugin/marketplace.json');
+  const { plugins, ...rest } = catalog;
+  assert.deepEqual(rest, builtRest);
+  assert.deepEqual(plugins, [builtPlugins[0]], 'only the unchanged devtools entry remains');
   for (const [file, output] of built) if (!owned(file)) assert.deepEqual(outputs.get(file), output, file);
   assert.deepEqual([...outputs.keys()].filter(file => !owned(file)).sort(), [...built.keys()].filter(file => !owned(file)).sort());
 });
 
 test('feature folders without feature.json fail', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
+  const dir = await addFeature(temp, 'sample');
   await fs.rm(path.join(dir, 'feature.json'));
-  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /feature\.json is required/.test(error.message));
+  await assert.rejects(generate(temp), error => /sample/.test(error.message) && /feature\.json is required/.test(error.message));
 });
 
 test('loose files directly under features fail', async t => {
@@ -467,10 +474,10 @@ test('loose files directly under features fail', async t => {
 });
 
 test('feature.json without a string name field fails', async t => {
-  for (const manifest of [{ description: 'x' }, ['statusline'], 'statusline', null]) {
+  for (const manifest of [{ description: 'x' }, ['sample'], 'sample', null]) {
     const temp = await fixture(t);
-    await addFeature(temp, 'statusline', { manifest });
-    await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /name field is missing or invalid/.test(error.message));
+    await addFeature(temp, 'sample', { manifest });
+    await assert.rejects(generate(temp), error => /sample/.test(error.message) && /name field is missing or invalid/.test(error.message));
   }
 });
 
@@ -482,38 +489,40 @@ const claudePluginFiles = outputs => [...outputs.keys()].filter(file => file.sta
 
 test('each Claude feature is copied to its own plugin directory', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
+  await fs.rm(path.join(temp, 'features'), { recursive: true, force: true });
+  const dir = await addFeature(temp, 'sample');
   const script = Buffer.from('#!/bin/sh\necho "{{client.missing}}"\r\n');
   await addClaudeFile(dir, 'scripts/status.sh', script);
   const outputs = await generate(temp);
   assert.deepEqual(claudePluginFiles(outputs), [
-    'dist/claude-plugins/statusline/.claude-plugin/plugin.json',
-    'dist/claude-plugins/statusline/scripts/status.sh',
+    'dist/claude-plugins/sample/.claude-plugin/plugin.json',
+    'dist/claude-plugins/sample/scripts/status.sh',
   ]);
-  assert.deepEqual(outputs.get('dist/claude-plugins/statusline/scripts/status.sh').bytes, script);
+  assert.deepEqual(outputs.get('dist/claude-plugins/sample/scripts/status.sh').bytes, script);
 });
 
 test('Claude feature plugin.json carries the root package version', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
-  await addClaudeFile(dir, '.claude-plugin/plugin.json', JSON.stringify({ name: 'statusline', version: '9.9.9', description: 'Status line' }) + '\n');
+  const dir = await addFeature(temp, 'sample');
+  await addClaudeFile(dir, '.claude-plugin/plugin.json', JSON.stringify({ name: 'sample', version: '9.9.9', description: 'Status line' }) + '\n');
   const pkg = JSON.parse(await fs.readFile(path.join(temp, 'package.json'), 'utf8'));
   const outputs = await generate(temp);
-  assert.ok(outputs.has('dist/claude-plugins/statusline/.claude-plugin/plugin.json'), 'Missing emitted plugin.json');
-  const plugin = JSON.parse(outputs.get('dist/claude-plugins/statusline/.claude-plugin/plugin.json').bytes);
-  assert.deepEqual(plugin, { name: 'statusline', version: pkg.version, description: 'Status line' });
+  assert.ok(outputs.has('dist/claude-plugins/sample/.claude-plugin/plugin.json'), 'Missing emitted plugin.json');
+  const plugin = JSON.parse(outputs.get('dist/claude-plugins/sample/.claude-plugin/plugin.json').bytes);
+  assert.deepEqual(plugin, { name: 'sample', version: pkg.version, description: 'Status line' });
 });
 
 test('Claude feature plugin.json names must match the feature', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
+  const dir = await addFeature(temp, 'sample');
   await addClaudeFile(dir, '.claude-plugin/plugin.json', JSON.stringify({ name: 'status-line', description: 'x' }) + '\n');
-  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /plugin\.json/.test(error.message) && /"status-line"/.test(error.message) && /"statusline"/.test(error.message));
+  await assert.rejects(generate(temp), error => /sample/.test(error.message) && /plugin\.json/.test(error.message) && /"status-line"/.test(error.message) && /"sample"/.test(error.message));
 });
 
 test('Claude feature test files and generated .claude-plugin/types are not copied', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
+  await fs.rm(path.join(temp, 'features'), { recursive: true, force: true });
+  const dir = await addFeature(temp, 'sample');
   await addClaudeFile(dir, 'index.ts', 'export {};\n');
   await addClaudeFile(dir, 'index.test.ts', 'export {};\n');
   await addClaudeFile(dir, 'view/panel.tsx', 'export {};\n');
@@ -521,24 +530,25 @@ test('Claude feature test files and generated .claude-plugin/types are not copie
   await addClaudeFile(dir, '.claude-plugin/types/claude.d.ts', 'export {};\n');
   const outputs = await generate(temp);
   assert.deepEqual(claudePluginFiles(outputs), [
-    'dist/claude-plugins/statusline/.claude-plugin/plugin.json',
-    'dist/claude-plugins/statusline/index.ts',
-    'dist/claude-plugins/statusline/view/panel.tsx',
+    'dist/claude-plugins/sample/.claude-plugin/plugin.json',
+    'dist/claude-plugins/sample/index.ts',
+    'dist/claude-plugins/sample/view/panel.tsx',
   ]);
 });
 
 test('a top-level types folder named by plugin.json is copied', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
-  await addClaudeFile(dir, '.claude-plugin/plugin.json', JSON.stringify({ name: 'statusline', description: 'x', types: './types' }) + '\n');
+  const dir = await addFeature(temp, 'sample');
+  await addClaudeFile(dir, '.claude-plugin/plugin.json', JSON.stringify({ name: 'sample', description: 'x', types: './types' }) + '\n');
   await addClaudeFile(dir, 'types/status.d.ts', 'export {};\n');
   const outputs = await generate(temp);
-  assert.ok(outputs.has('dist/claude-plugins/statusline/types/status.d.ts'), 'Top-level types/ must be copied');
+  assert.ok(outputs.has('dist/claude-plugins/sample/types/status.d.ts'), 'Top-level types/ must be copied');
 });
 
 test('the Claude catalog lists each Claude feature after an unchanged devtools entry', async t => {
   const temp = await fixture(t);
-  await addFeature(temp, 'statusline', { manifest: { name: 'statusline', description: 'Shows session status' } });
+  await fs.rm(path.join(temp, 'features'), { recursive: true, force: true });
+  await addFeature(temp, 'sample', { manifest: { name: 'sample', description: 'Shows session status' } });
   await addFeature(temp, 'alpha', { manifest: { name: 'alpha', description: 'Alpha feature' } });
   await addFeature(temp, 'pi-only', { harnesses: ['pi'] });
   const outputs = await generate(temp);
@@ -547,14 +557,14 @@ test('the Claude catalog lists each Claude feature after an unchanged devtools e
   assert.equal(catalog.plugins[0].name, 'devtools');
   assert.deepEqual(catalog.plugins.slice(1), [
     { name: 'alpha', source: './dist/claude-plugins/alpha', description: 'Alpha feature' },
-    { name: 'statusline', source: './dist/claude-plugins/statusline', description: 'Shows session status' },
+    { name: 'sample', source: './dist/claude-plugins/sample', description: 'Shows session status' },
   ]);
 });
 
 test('the distribution manifest counts features per harness', async t => {
   const temp = await fixture(t);
   await fs.rm(path.join(temp, 'features'), { recursive: true, force: true });
-  await addFeature(temp, 'statusline', { harnesses: ['claude', 'pi'] });
+  await addFeature(temp, 'sample', { harnesses: ['claude', 'pi'] });
   await addFeature(temp, 'alpha');
   await addFeature(temp, 'pi-only', { harnesses: ['pi'] });
   const manifest = JSON.parse((await generate(temp)).get('dist/manifest.json').bytes);
@@ -563,7 +573,7 @@ test('the distribution manifest counts features per harness', async t => {
 
 test('runtime-generated claude/.claude-plugin/types does not affect the input fingerprint', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
+  const dir = await addFeature(temp, 'sample');
   const before = await generate(temp);
   await addClaudeFile(dir, '.claude-plugin/types/x.d.ts', 'export {};\n');
   const after = await generate(temp);
@@ -574,48 +584,92 @@ test('runtime-generated claude/.claude-plugin/types does not affect the input fi
 test('Claude features require a non-empty feature.json description', async t => {
   for (const description of [undefined, '', '   ', 42, null]) {
     const temp = await fixture(t);
-    await addFeature(temp, 'statusline', { manifest: { name: 'statusline', description } });
-    await assert.rejects(generate(temp), error => /features\/statusline/.test(error.message) && /description/.test(error.message), `description ${JSON.stringify(description)}`);
+    await addFeature(temp, 'sample', { manifest: { name: 'sample', description } });
+    await assert.rejects(generate(temp), error => /features\/sample/.test(error.message) && /description/.test(error.message), `description ${JSON.stringify(description)}`);
   }
 });
 
 test('Claude features without plugin.json fail', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
+  const dir = await addFeature(temp, 'sample');
   await fs.rm(path.join(dir, 'claude/.claude-plugin/plugin.json'));
   await addClaudeFile(dir, 'index.ts', 'export {};\n');
-  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /plugin\.json is required/.test(error.message));
+  await assert.rejects(generate(temp), error => /sample/.test(error.message) && /plugin\.json is required/.test(error.message));
 });
 
 test('Claude feature plugin.json must be valid JSON', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
+  const dir = await addFeature(temp, 'sample');
   await addClaudeFile(dir, '.claude-plugin/plugin.json', '{ "name": ');
-  await assert.rejects(generate(temp), error => /features\/statusline\/claude\/\.claude-plugin\/plugin\.json/.test(error.message));
+  await assert.rejects(generate(temp), error => /features\/sample\/claude\/\.claude-plugin\/plugin\.json/.test(error.message));
 });
 
 test('Claude feature shebang scripts are executable and other files are not', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
+  const dir = await addFeature(temp, 'sample');
   await addClaudeFile(dir, 'scripts/status.sh', '#!/bin/sh\necho ok\n');
   await addClaudeFile(dir, 'README.md', 'readme\n');
   const outputs = await generate(temp);
-  assert.equal(outputs.get('dist/claude-plugins/statusline/scripts/status.sh').mode, 0o755);
-  assert.equal(outputs.get('dist/claude-plugins/statusline/README.md').mode, 0o644);
+  assert.equal(outputs.get('dist/claude-plugins/sample/scripts/status.sh').mode, 0o755);
+  assert.equal(outputs.get('dist/claude-plugins/sample/README.md').mode, 0o644);
 });
 
 test('a top-level types folder not named by plugin.json is copied', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
+  const dir = await addFeature(temp, 'sample');
   await addClaudeFile(dir, 'types/status.d.ts', 'export {};\n');
   const outputs = await generate(temp);
-  assert.ok(outputs.has('dist/claude-plugins/statusline/types/status.d.ts'), 'Top-level types/ must be copied');
+  assert.ok(outputs.has('dist/claude-plugins/sample/types/status.d.ts'), 'Top-level types/ must be copied');
 });
 
 test('a nested .claude-plugin/types folder is copied', async t => {
   const temp = await fixture(t);
-  const dir = await addFeature(temp, 'statusline');
+  const dir = await addFeature(temp, 'sample');
   await addClaudeFile(dir, 'sub/.claude-plugin/types/x.d.ts', 'export {};\n');
   const outputs = await generate(temp);
-  assert.ok(outputs.has('dist/claude-plugins/statusline/sub/.claude-plugin/types/x.d.ts'), 'Only the top-level .claude-plugin/types is excluded');
+  assert.ok(outputs.has('dist/claude-plugins/sample/sub/.claude-plugin/types/x.d.ts'), 'Only the top-level .claude-plugin/types is excluded');
+});
+
+const statuslinePlugin = 'dist/claude-plugins/statusline/';
+
+test('the catalog lists the statusline feature after devtools', () => {
+  const plugins = json('.claude-plugin/marketplace.json').plugins;
+  assert.deepEqual(plugins.map(plugin => plugin.name), ['devtools', 'statusline']);
+  assert.equal(plugins[1].source, './dist/claude-plugins/statusline');
+});
+
+test('the statusline distribution ships without tests or generated types', async () => {
+  const files = [...built.keys()].filter(file => file.startsWith(statuslinePlugin));
+  assert.ok(files.length > 0, `Missing ${statuslinePlugin}`);
+  assert.deepEqual(files.filter(file => /\.test\.tsx?$/.test(file)), []);
+  assert.deepEqual(files.filter(file => file.startsWith(`${statuslinePlugin}.claude-plugin/types/`)), []);
+  const pkg = JSON.parse(await fs.readFile(path.join(root, 'package.json'), 'utf8'));
+  assert.equal(json(`${statuslinePlugin}.claude-plugin/plugin.json`).version, pkg.version);
+});
+
+test('the statusline plugin description matches its feature description', async () => {
+  const feature = JSON.parse(await fs.readFile(path.join(root, 'features/statusline/feature.json'), 'utf8'));
+  const plugin = JSON.parse(await fs.readFile(path.join(root, 'features/statusline/claude/.claude-plugin/plugin.json'), 'utf8'));
+  assert.equal(plugin.description, feature.description);
+});
+
+test('the statusline README states what it runs, reads, and writes', async () => {
+  const readme = await fs.readFile(path.join(root, 'features/statusline/README.md'), 'utf8');
+  assert.match(readme, /\bgit\b/);
+  assert.match(readme, /~\/\.claude\/mods-data\/statusline\/ledger\//);
+  assert.match(readme, /\.claude-plugin\/types\/tsconfig\.json/);
+});
+
+// Feature tests run under their host's own runner, so only test files outside
+// features/ have to be reachable by the npm test glob.
+test('every test file outside features/ matches the npm test glob', async () => {
+  const pkg = JSON.parse(await fs.readFile(path.join(root, 'package.json'), 'utf8'));
+  const glob = pkg.scripts.test.match(/"([^"]+)"/)[1];
+  const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard'], { cwd: root, encoding: 'utf8' })
+    .split('\n')
+    .filter(file => /\.test\.(mjs|js|cjs|ts|tsx)$/.test(file) && !file.startsWith('features/'));
+  assert.ok(files.length > 0, 'expected at least one test file outside features/');
+  // globSync returns platform separators; git ls-files always uses forward slashes.
+  const matched = new Set(globSync(glob, { cwd: root }).map(file => file.split(path.sep).join('/')));
+  assert.deepEqual(files.filter(file => !matched.has(file)), []);
 });

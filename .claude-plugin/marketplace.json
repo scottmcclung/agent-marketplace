@@ -8,6 +8,11 @@
       "name": "devtools",
       "source": "./dist/claude",
       "description": "A shared prompt library with native Claude Code, Codex, and Pi distributions"
+    },
+    {
+      "name": "statusline",
+      "source": "./dist/claude-plugins/statusline",
+      "description": "Shows the repository, today's commits, the model, context usage, 30-day and block cost, and the rate-limit reset time under the prompt."
     }
   ]
 }
