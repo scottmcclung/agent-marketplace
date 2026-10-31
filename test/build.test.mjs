@@ -298,3 +298,120 @@ test('documents require valid names, descriptions, and bodies', () => {
   assert.throws(() => parseDocument('---\nname: valid\n---\nbody'), /description/);
   assert.throws(() => parseDocument('---\nname: valid\ndescription: hi\n---\n'), /body/);
 });
+
+async function addFeature(temp, name, { manifest = { name, description: `${name} feature` }, harnesses = ['claude'] } = {}) {
+  const dir = path.join(temp, 'features', name);
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(path.join(dir, 'feature.json'), JSON.stringify(manifest, null, 2) + '\n');
+  for (const harness of harnesses) {
+    if (harness === 'claude') {
+      await fs.mkdir(path.join(dir, 'claude/.claude-plugin'), { recursive: true });
+      await fs.writeFile(path.join(dir, 'claude/.claude-plugin/plugin.json'), JSON.stringify({ name, description: `${name} feature` }, null, 2) + '\n');
+    } else if (harness === 'pi') {
+      await fs.mkdir(path.join(dir, 'pi'), { recursive: true });
+      await fs.writeFile(path.join(dir, 'pi/index.mjs'), 'export default function () {}\n');
+    } else {
+      await fs.mkdir(path.join(dir, harness), { recursive: true });
+      await fs.writeFile(path.join(dir, harness, 'README.md'), `${harness}\n`);
+    }
+  }
+  return dir;
+}
+const digestOf = outputs => JSON.parse(outputs.get('dist/manifest.json').bytes).inputsDigest;
+
+test('feature names must match their folder', async t => {
+  const temp = await fixture(t);
+  await addFeature(temp, 'statusline', { manifest: { name: 'status-line', description: 'x' } });
+  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /folder/.test(error.message));
+});
+
+test('feature names must be lowercase hyphenated identifiers', async t => {
+  const temp = await fixture(t);
+  await addFeature(temp, 'Status_Line');
+  await assert.rejects(generate(temp), error => /Status_Line/.test(error.message) && /lowercase hyphenated/.test(error.message));
+});
+
+test('feature names must not collide with devtools', async t => {
+  const temp = await fixture(t);
+  await addFeature(temp, 'devtools');
+  await assert.rejects(generate(temp), error => /devtools/.test(error.message) && /reserved|collide/.test(error.message));
+});
+
+test('features without a harness folder fail', async t => {
+  const temp = await fixture(t);
+  await addFeature(temp, 'statusline', { harnesses: [] });
+  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /harness/.test(error.message));
+});
+
+test('unknown feature harness folders fail', async t => {
+  const temp = await fixture(t);
+  await addFeature(temp, 'statusline', { harnesses: ['claude', 'claud'] });
+  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /claud\b/.test(error.message) && /unknown harness/i.test(error.message));
+});
+
+test('codex feature folders fail as unsupported', async t => {
+  const temp = await fixture(t);
+  await addFeature(temp, 'statusline', { harnesses: ['claude', 'codex'] });
+  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /codex features are not supported yet/.test(error.message));
+});
+
+test('every feature file byte is part of the input fingerprint', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline', { harnesses: ['claude', 'pi'] });
+  let digest = digestOf(await generate(temp));
+  assert.notEqual(digest, digestOf(built), 'adding a feature must change the input fingerprint');
+  for (const file of ['feature.json', 'claude/.claude-plugin/plugin.json', 'pi/index.mjs']) {
+    const original = await fs.readFile(path.join(dir, file));
+    // Append a space: flipping a bit of the trailing newline would make feature.json invalid JSON.
+    const changed = Buffer.concat([original, Buffer.from(' ')]);
+    await fs.writeFile(path.join(dir, file), changed);
+    const next = digestOf(await generate(temp));
+    assert.notEqual(next, digest, `features/statusline/${file} must affect the input fingerprint`);
+    digest = next;
+  }
+});
+
+test('adding or removing a feature changes the fingerprint and fails check', async t => {
+  const temp = await fixture(t);
+  await addFeature(temp, 'statusline');
+  const before = await generate(temp);
+  await write(temp, before);
+  assert.deepEqual(await check(temp, before), []);
+  await addFeature(temp, 'second-feature', { harnesses: ['pi'] });
+  const added = await generate(temp);
+  assert.notEqual(digestOf(added), digestOf(before), 'adding a feature folder must change the input fingerprint');
+  assert.notDeepEqual(await check(temp, added), [], 'check must fail after a feature is added');
+  await write(temp, added);
+  await fs.rm(path.join(temp, 'features/second-feature'), { recursive: true });
+  const removed = await generate(temp);
+  assert.notEqual(digestOf(removed), digestOf(added), 'removing a feature folder must change the input fingerprint');
+  assert.notDeepEqual(await check(temp, removed), [], 'check must fail after a feature is removed');
+});
+
+test('output without a features folder is unchanged', async t => {
+  const temp = await fixture(t);
+  await assert.rejects(fs.access(path.join(temp, 'features')));
+  assert.deepEqual(await generate(temp), built);
+});
+
+test('feature folders without feature.json fail', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  await fs.rm(path.join(dir, 'feature.json'));
+  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /feature\.json is required/.test(error.message));
+});
+
+test('loose files directly under features fail', async t => {
+  const temp = await fixture(t);
+  await fs.mkdir(path.join(temp, 'features'), { recursive: true });
+  await fs.writeFile(path.join(temp, 'features/README.md'), 'features\n');
+  await assert.rejects(generate(temp), error => /Expected a feature folder/.test(error.message) && /README\.md/.test(error.message));
+});
+
+test('feature.json without a string name field fails', async t => {
+  for (const manifest of [{ description: 'x' }, ['statusline'], 'statusline', null]) {
+    const temp = await fixture(t);
+    await addFeature(temp, 'statusline', { manifest });
+    await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /name field is missing or invalid/.test(error.message));
+  }
+});

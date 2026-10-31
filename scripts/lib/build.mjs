@@ -76,6 +76,45 @@ function validateConfig(config, id) {
   if ((id === 'codex') !== (config.agentMode === 'delegation-skills')) fail(`${id}: unsupported agentMode`);
 }
 
+const FEATURE_HARNESSES = ['claude', 'pi'];
+
+/** Features live at features/<name>/ with a feature.json and one folder per harness. */
+async function readFeatures(root, input) {
+  let files;
+  try { files = await walk(path.join(root, 'features')); }
+  catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+  const byName = new Map();
+  for (const file of files) {
+    const [name, ...rest] = file.split('/');
+    if (!rest.length) fail(`Expected a feature folder: features/${file}`);
+    if (!byName.has(name)) byName.set(name, []);
+    byName.get(name).push(rest.join('/'));
+  }
+  const features = [];
+  for (const [name, entries] of byName) {
+    const label = `features/${name}`;
+    if (!entries.includes('feature.json')) fail(`${label}: feature.json is required`);
+    // Read every file so any byte change under features/ alters inputsDigest.
+    for (const entry of entries) await input(`${label}/${entry}`);
+    let manifest;
+    try { manifest = JSON.parse((await input(`${label}/feature.json`)).toString()); }
+    catch (error) { fail(`${label}/feature.json: ${error.message}`); }
+    if (typeof manifest?.name !== 'string') fail(`${label}: feature.json name field is missing or invalid`);
+    if (manifest.name !== name) fail(`${label}: feature.json name must match the folder name`);
+    if (!slug.test(name)) fail(`${label}: feature name ${name} must be a lowercase hyphenated identifier`);
+    // The core plugin is published as devtools; a feature with that name would shadow it in catalogs.
+    if (name === 'devtools') fail(`${label}: feature name devtools is reserved`);
+    const harnesses = new Set(entries.filter(entry => entry.includes('/')).map(entry => entry.split('/')[0]));
+    for (const harness of harnesses) {
+      if (harness === 'codex') fail(`${label}: codex features are not supported yet`);
+      if (!FEATURE_HARNESSES.includes(harness)) fail(`${label}: unknown harness folder: ${harness}`);
+    }
+    if (!harnesses.size) fail(`${label}: at least one harness folder is required (${FEATURE_HARNESSES.join(', ')})`);
+    features.push({ name, manifest, harnesses: [...harnesses].sort() });
+  }
+  return features;
+}
+
 /** Generate entirely in memory: bad input never deletes a working distribution. */
 export async function generate(root) {
   const pkg = JSON.parse(await fs.readFile(path.join(root, 'package.json'), 'utf8'));
@@ -124,6 +163,8 @@ export async function generate(root) {
   for (const file of skillFiles) {
     if (!skillNames.has(file.split('/')[0])) fail(`Orphan skill resource: ${file}`);
   }
+
+  const features = await readFeatures(root, input);
 
   for (const id of CLIENTS) {
     const config = JSON.parse((await input(`clients/${id}/config.json`)).toString());

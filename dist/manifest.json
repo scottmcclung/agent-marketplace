@@ -1,7 +1,7 @@
 {
   "library": "agent-marketplace",
   "version": "0.1.0",
-  "inputsDigest": "0a117c459a06677bb7d1b3d90f7068419766337f1a5b8e14a6090edbb3880444",
+  "inputsDigest": "bab39741d599d933991bd96ac002607132f120c2083153a3bd98d9bb9b5d0651",
   "counts": {
     "agents": 10,
     "commands": 3,
@@ -77,7 +77,7 @@
       "mode": 420
     },
     "dist/claude/library-version.json": {
-      "sha256": "ce465d4e25666efab89688637deb4dfdbe6ac90e9ed53dae05073241e10c56fa",
+      "sha256": "e85330ab95ab1ec83a3c7ea9d9cd92738a8eee54ed1b30bc49efc52284bf018b",
       "mode": 420
     },
     "dist/claude/skills/pandoc-converter/SKILL.md": {
@@ -181,7 +181,7 @@
       "mode": 420
     },
     "dist/codex/library-version.json": {
-      "sha256": "3d3603823978a2ee5ae0659425b6e2cc92686b76890130d15c106660c57a192b",
+      "sha256": "041a0f7a3c82b4586d79d6bac7273e64046e8b2b19a9c1a4ddf5172d1b568aaa",
       "mode": 420
     },
     "dist/codex/plugin.json": {
@@ -401,7 +401,7 @@
       "mode": 420
     },
     "dist/pi/library-version.json": {
-      "sha256": "130fcabe286021c4093089de362169aa92aca801b0b5b2e9f99aebf5d26abc49",
+      "sha256": "8a2c758f9508a19dd54218871b40339e3083298aadbe6d310f352ab28377d73d",
       "mode": 420
     },
     "dist/pi/package.json": {
