@@ -78,6 +78,10 @@ function validateConfig(config, id) {
 
 const FEATURE_HARNESSES = ['claude', 'pi'];
 
+// Claude Code writes SDK types into a plugin's .claude-plugin/types/ when it loads the plugin.
+// They are not source, so a local load must not change inputsDigest or the emitted plugin.
+const harnessGenerated = entry => entry.startsWith('claude/.claude-plugin/types/');
+
 /** Features live at features/<name>/ with a feature.json and one folder per harness. */
 async function readFeatures(root, input) {
   let files;
@@ -87,6 +91,7 @@ async function readFeatures(root, input) {
   for (const file of files) {
     const [name, ...rest] = file.split('/');
     if (!rest.length) fail(`Expected a feature folder: features/${file}`);
+    if (harnessGenerated(rest.join('/'))) continue;
     if (!byName.has(name)) byName.set(name, []);
     byName.get(name).push(rest.join('/'));
   }
@@ -271,9 +276,34 @@ export async function generate(root) {
     }
   }
 
+  // Claude feature folders are opaque and untemplated. Only plugin.json is rewritten, to stamp the release version.
+  // Test files are development-only.
+  const claudeExcluded = entry => /\.test\.tsx?$/.test(entry);
+  const claudeFeatures = features.filter(feature => feature.harnesses.includes('claude')).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+  for (const feature of claudeFeatures) {
+    const label = `features/${feature.name}/claude/.claude-plugin/plugin.json`;
+    if (!feature.entries.includes('claude/.claude-plugin/plugin.json')) fail(`${label} is required`);
+    // feature.json supplies the catalog entry's description.
+    if (typeof feature.manifest.description !== 'string' || !feature.manifest.description.trim()) fail(`features/${feature.name}: feature.json description must be a non-empty string for Claude features`);
+    for (const entry of feature.entries.filter(entry => entry.startsWith('claude/') && !claudeExcluded(entry))) {
+      const bytes = await input(`features/${feature.name}/${entry}`);
+      const destination = `dist/claude-plugins/${feature.name}/${entry.slice('claude/'.length)}`;
+      if (entry === 'claude/.claude-plugin/plugin.json') {
+        let plugin;
+        try { plugin = JSON.parse(bytes.toString()); }
+        catch (error) { fail(`${label}: ${error.message}`); }
+        if (plugin?.name !== feature.name) fail(`${label}: name ${JSON.stringify(plugin?.name)} must match the feature name ${JSON.stringify(feature.name)}`);
+        emit(destination, json({ ...plugin, version: pkg.version }));
+        continue;
+      }
+      const mode = bytes.subarray(0, 2).toString() === '#!' ? 0o755 : 0o644;
+      emit(destination, bytes, mode);
+    }
+  }
+
   const identity = { name: 'devtools', version: pkg.version, description: pkg.description, author: typeof pkg.author === 'string' ? { name: pkg.author } : pkg.author, license: pkg.license, repository: pkg.repository };
   emit('dist/claude/.claude-plugin/plugin.json', json(identity));
-  emit('.claude-plugin/marketplace.json', json({ name: pkg.name, owner: identity.author, plugins: [{ name: identity.name, source: './dist/claude', description: identity.description }] }));
+  emit('.claude-plugin/marketplace.json', json({ name: pkg.name, owner: identity.author, plugins: [{ name: identity.name, source: './dist/claude', description: identity.description }, ...claudeFeatures.map(feature => ({ name: feature.name, source: `./dist/claude-plugins/${feature.name}`, description: feature.manifest.description }))] }));
   emit('dist/codex/plugin.json', json({ $schema: 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json', ...identity }));
   emit('.agents/plugins/marketplace.json', json({
     name: pkg.name, interface: { displayName: 'Agent Marketplace' },
@@ -288,7 +318,7 @@ export async function generate(root) {
   for (const file of ['package.json', 'scripts/lib/build.mjs']) await input(file);
   const inputsDigest = hash([...inputs].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([file, bytes]) => `${file}\0${hash(bytes)}\n`).join(''));
   for (const id of CLIENTS) emit(`dist/${id}/library-version.json`, json({ library: pkg.name, version: pkg.version, client: id, inputsDigest, agentMode: id === 'codex' ? 'delegation-skills' : 'native' }));
-  emit('dist/manifest.json', json({ library: pkg.name, version: pkg.version, inputsDigest, counts: { agents: sourceDocs.agents.length, commands: sourceDocs.commands.length, skills: skillDocs.length }, files: Object.fromEntries([...outputs].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([file, output]) => [file, { sha256: hash(output.bytes), mode: output.mode }])) }));
+  emit('dist/manifest.json', json({ library: pkg.name, version: pkg.version, inputsDigest, counts: { agents: sourceDocs.agents.length, commands: sourceDocs.commands.length, skills: skillDocs.length, features: Object.fromEntries(FEATURE_HARNESSES.map(harness => [harness, features.filter(feature => feature.harnesses.includes(harness)).length])) }, files: Object.fromEntries([...outputs].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([file, output]) => [file, { sha256: hash(output.bytes), mode: output.mode }])) }));
   return outputs;
 }
 

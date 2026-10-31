@@ -28,8 +28,8 @@ async function changeJson(temp, file, change) {
   await fs.writeFile(path.join(temp, file), JSON.stringify(value));
 }
 
-test('imports all ten agents, three commands, and three skills', () => {
-  assert.deepEqual(json('dist/manifest.json').counts, { agents: 10, commands: 3, skills: 3 });
+test('imports all ten agents, three commands, three skills, and one Pi feature', () => {
+  assert.deepEqual(json('dist/manifest.json').counts, { agents: 10, commands: 3, skills: 3, features: { claude: 0, pi: 1 } });
 });
 
 test('all native distributions share the same version and input fingerprint', async () => {
@@ -472,4 +472,150 @@ test('feature.json without a string name field fails', async t => {
     await addFeature(temp, 'statusline', { manifest });
     await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /name field is missing or invalid/.test(error.message));
   }
+});
+
+async function addClaudeFile(dir, file, contents) {
+  await fs.mkdir(path.dirname(path.join(dir, 'claude', file)), { recursive: true });
+  await fs.writeFile(path.join(dir, 'claude', file), contents);
+}
+const claudePluginFiles = outputs => [...outputs.keys()].filter(file => file.startsWith('dist/claude-plugins/')).sort();
+
+test('each Claude feature is copied to its own plugin directory', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  const script = Buffer.from('#!/bin/sh\necho "{{client.missing}}"\r\n');
+  await addClaudeFile(dir, 'scripts/status.sh', script);
+  const outputs = await generate(temp);
+  assert.deepEqual(claudePluginFiles(outputs), [
+    'dist/claude-plugins/statusline/.claude-plugin/plugin.json',
+    'dist/claude-plugins/statusline/scripts/status.sh',
+  ]);
+  assert.deepEqual(outputs.get('dist/claude-plugins/statusline/scripts/status.sh').bytes, script);
+});
+
+test('Claude feature plugin.json carries the root package version', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  await addClaudeFile(dir, '.claude-plugin/plugin.json', JSON.stringify({ name: 'statusline', version: '9.9.9', description: 'Status line' }) + '\n');
+  const pkg = JSON.parse(await fs.readFile(path.join(temp, 'package.json'), 'utf8'));
+  const outputs = await generate(temp);
+  assert.ok(outputs.has('dist/claude-plugins/statusline/.claude-plugin/plugin.json'), 'Missing emitted plugin.json');
+  const plugin = JSON.parse(outputs.get('dist/claude-plugins/statusline/.claude-plugin/plugin.json').bytes);
+  assert.deepEqual(plugin, { name: 'statusline', version: pkg.version, description: 'Status line' });
+});
+
+test('Claude feature plugin.json names must match the feature', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  await addClaudeFile(dir, '.claude-plugin/plugin.json', JSON.stringify({ name: 'status-line', description: 'x' }) + '\n');
+  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /plugin\.json/.test(error.message) && /"status-line"/.test(error.message) && /"statusline"/.test(error.message));
+});
+
+test('Claude feature test files and generated .claude-plugin/types are not copied', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  await addClaudeFile(dir, 'index.ts', 'export {};\n');
+  await addClaudeFile(dir, 'index.test.ts', 'export {};\n');
+  await addClaudeFile(dir, 'view/panel.tsx', 'export {};\n');
+  await addClaudeFile(dir, 'view/panel.test.tsx', 'export {};\n');
+  await addClaudeFile(dir, '.claude-plugin/types/claude.d.ts', 'export {};\n');
+  const outputs = await generate(temp);
+  assert.deepEqual(claudePluginFiles(outputs), [
+    'dist/claude-plugins/statusline/.claude-plugin/plugin.json',
+    'dist/claude-plugins/statusline/index.ts',
+    'dist/claude-plugins/statusline/view/panel.tsx',
+  ]);
+});
+
+test('a top-level types folder named by plugin.json is copied', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  await addClaudeFile(dir, '.claude-plugin/plugin.json', JSON.stringify({ name: 'statusline', description: 'x', types: './types' }) + '\n');
+  await addClaudeFile(dir, 'types/status.d.ts', 'export {};\n');
+  const outputs = await generate(temp);
+  assert.ok(outputs.has('dist/claude-plugins/statusline/types/status.d.ts'), 'Top-level types/ must be copied');
+});
+
+test('the Claude catalog lists each Claude feature after an unchanged devtools entry', async t => {
+  const temp = await fixture(t);
+  await addFeature(temp, 'statusline', { manifest: { name: 'statusline', description: 'Shows session status' } });
+  await addFeature(temp, 'alpha', { manifest: { name: 'alpha', description: 'Alpha feature' } });
+  await addFeature(temp, 'pi-only', { harnesses: ['pi'] });
+  const outputs = await generate(temp);
+  const catalog = JSON.parse(outputs.get('.claude-plugin/marketplace.json').bytes);
+  assert.deepEqual(catalog.plugins[0], json('.claude-plugin/marketplace.json').plugins[0], 'devtools entry must not change');
+  assert.equal(catalog.plugins[0].name, 'devtools');
+  assert.deepEqual(catalog.plugins.slice(1), [
+    { name: 'alpha', source: './dist/claude-plugins/alpha', description: 'Alpha feature' },
+    { name: 'statusline', source: './dist/claude-plugins/statusline', description: 'Shows session status' },
+  ]);
+});
+
+test('the distribution manifest counts features per harness', async t => {
+  const temp = await fixture(t);
+  await fs.rm(path.join(temp, 'features'), { recursive: true, force: true });
+  await addFeature(temp, 'statusline', { harnesses: ['claude', 'pi'] });
+  await addFeature(temp, 'alpha');
+  await addFeature(temp, 'pi-only', { harnesses: ['pi'] });
+  const manifest = JSON.parse((await generate(temp)).get('dist/manifest.json').bytes);
+  assert.deepEqual(manifest.counts.features, { claude: 2, pi: 2 });
+});
+
+test('runtime-generated claude/.claude-plugin/types does not affect the input fingerprint', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  const before = await generate(temp);
+  await addClaudeFile(dir, '.claude-plugin/types/x.d.ts', 'export {};\n');
+  const after = await generate(temp);
+  assert.equal(digestOf(after), digestOf(before));
+  assert.deepEqual(claudePluginFiles(after), claudePluginFiles(before));
+});
+
+test('Claude features require a non-empty feature.json description', async t => {
+  for (const description of [undefined, '', '   ', 42, null]) {
+    const temp = await fixture(t);
+    await addFeature(temp, 'statusline', { manifest: { name: 'statusline', description } });
+    await assert.rejects(generate(temp), error => /features\/statusline/.test(error.message) && /description/.test(error.message), `description ${JSON.stringify(description)}`);
+  }
+});
+
+test('Claude features without plugin.json fail', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  await fs.rm(path.join(dir, 'claude/.claude-plugin/plugin.json'));
+  await addClaudeFile(dir, 'index.ts', 'export {};\n');
+  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /plugin\.json is required/.test(error.message));
+});
+
+test('Claude feature plugin.json must be valid JSON', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  await addClaudeFile(dir, '.claude-plugin/plugin.json', '{ "name": ');
+  await assert.rejects(generate(temp), error => /features\/statusline\/claude\/\.claude-plugin\/plugin\.json/.test(error.message));
+});
+
+test('Claude feature shebang scripts are executable and other files are not', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  await addClaudeFile(dir, 'scripts/status.sh', '#!/bin/sh\necho ok\n');
+  await addClaudeFile(dir, 'README.md', 'readme\n');
+  const outputs = await generate(temp);
+  assert.equal(outputs.get('dist/claude-plugins/statusline/scripts/status.sh').mode, 0o755);
+  assert.equal(outputs.get('dist/claude-plugins/statusline/README.md').mode, 0o644);
+});
+
+test('a top-level types folder not named by plugin.json is copied', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  await addClaudeFile(dir, 'types/status.d.ts', 'export {};\n');
+  const outputs = await generate(temp);
+  assert.ok(outputs.has('dist/claude-plugins/statusline/types/status.d.ts'), 'Top-level types/ must be copied');
+});
+
+test('a nested .claude-plugin/types folder is copied', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline');
+  await addClaudeFile(dir, 'sub/.claude-plugin/types/x.d.ts', 'export {};\n');
+  const outputs = await generate(temp);
+  assert.ok(outputs.has('dist/claude-plugins/statusline/sub/.claude-plugin/types/x.d.ts'), 'Only the top-level .claude-plugin/types is excluded');
 });
