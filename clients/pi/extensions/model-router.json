@@ -1,5 +1,8 @@
 {
   "profiles": {
+    "smallest": [
+      "ollama/gemma4:e4b"
+    ],
     "fast": [
       "anthropic/claude-haiku-5-5",
       "openai/gpt-6-luna",

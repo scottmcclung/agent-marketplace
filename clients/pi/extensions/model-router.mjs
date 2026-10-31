@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 const provider = 'devtools-router';
-const profileNames = ['fast', 'balanced', 'deep'];
+const profileNames = ['smallest', 'fast', 'balanced', 'deep'];
 const configurationError = () => new Error('Devtools router configuration is invalid.');
 const routeError = () => new Error('Devtools router has no eligible physical model for this request.');
 const abortError = () => Object.assign(new Error('Devtools router request cancelled.'), { name: 'AbortError' });

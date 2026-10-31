@@ -187,10 +187,31 @@ test('fast defaults prefer current Haiku, then Luna, then the configured Ollama 
   ]);
 });
 
+test('smallest defaults route only to local Gemma and never fall back to cloud', async t => {
+  const h = await register(t);
+  await h.load();
+  const local = { provider: 'ollama', id: 'gemma4:e4b', api: 'openai-completions' };
+  const cloud = { provider: 'openai', id: 'gpt-6-luna', api: 'openai-completions' };
+  const registry = {
+    getAvailable: () => [local, cloud],
+    find: (provider, id) => [local, cloud].find(model => model.provider === provider && model.id === id),
+    getApiKeyAndHeaders: async model => { assert.equal(model.provider, 'ollama'); return { ok: true }; },
+  };
+  assert.strictEqual((await h.models.get('smallest').route({}, { modelRegistry: registry })).model, local);
+  registry.getAvailable = () => [cloud];
+  await assert.rejects(h.models.get('smallest').route({}, { modelRegistry: registry }), /no eligible/);
+});
+
+test('smallest supports an explicit profile override', async t => {
+  const h = await register(t, { profiles: { smallest: ['primary/large'] } });
+  await h.load();
+  assert.strictEqual((await h.models.get('smallest').route({}, fixture().ctx)).model, primary);
+});
+
 test('factory registers default ordered profiles, thinking levels, and a UI-only manual reset', async t => {
   const h = await register(t);
   await h.load();
-  assert.deepEqual([...h.models.keys()], ['fast', 'balanced', 'deep']);
+  assert.deepEqual([...h.models.keys()], ['smallest', 'fast', 'balanced', 'deep']);
   const defaults = JSON.parse(await fs.readFile(new URL('../clients/pi/extensions/model-router.json', import.meta.url), 'utf8'));
   const checks = [];
   let eligible = false;
@@ -228,7 +249,7 @@ test('partial override merges defaults and edits take effect only on extension r
   assert.strictEqual((await h.models.get('deep').route({}, ctx)).model, primary);
   await h.load();
   assert.strictEqual((await h.models.get('deep').route({}, ctx)).model, secondary);
-  assert.equal(h.models.size, 3);
+  assert.equal(h.models.size, 4);
 });
 
 for (const override of ['{SECRET', {}, { profiles: [] }, { profiles: { unknown: [] } },

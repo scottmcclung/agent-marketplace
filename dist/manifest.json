@@ -1,7 +1,7 @@
 {
   "library": "agent-marketplace",
   "version": "0.1.0",
-  "inputsDigest": "7b6f1e412f62c17e26ddac27179d72e14304e1ef74c141ce96a15f12bfbd3e3b",
+  "inputsDigest": "0a117c459a06677bb7d1b3d90f7068419766337f1a5b8e14a6090edbb3880444",
   "counts": {
     "agents": 10,
     "commands": 3,
@@ -77,7 +77,7 @@
       "mode": 420
     },
     "dist/claude/library-version.json": {
-      "sha256": "5e105cfce7e252bd34acf17307e4971756b0dc1931c692457965a9b6466fb0b1",
+      "sha256": "ce465d4e25666efab89688637deb4dfdbe6ac90e9ed53dae05073241e10c56fa",
       "mode": 420
     },
     "dist/claude/skills/pandoc-converter/SKILL.md": {
@@ -181,7 +181,7 @@
       "mode": 420
     },
     "dist/codex/library-version.json": {
-      "sha256": "bdaf7a88001b98ff0775d36aa4a0693b5e0d4084d82e64da3e039654cc5588be",
+      "sha256": "3d3603823978a2ee5ae0659425b6e2cc92686b76890130d15c106660c57a192b",
       "mode": 420
     },
     "dist/codex/plugin.json": {
@@ -393,15 +393,15 @@
       "mode": 420
     },
     "dist/pi/extensions/model-router.json": {
-      "sha256": "4954e5d878083dc68b93bc69e2af9d8ce593724338a0c80c50f92dbe11411b0f",
+      "sha256": "4b077a563b5ef8ef083387d374f5c5b48e3fb90a265e32783186bdc3fb9a5026",
       "mode": 420
     },
     "dist/pi/extensions/model-router.mjs": {
-      "sha256": "e55bf1808a5821049b99e0b7497ef9ea17f9deb349d540a42115b0ea8d702fba",
+      "sha256": "d8411b108e3dcd4b946b682e80f4d525f05c1be68f952f8f5c4d7fce54a9656e",
       "mode": 420
     },
     "dist/pi/library-version.json": {
-      "sha256": "fc38c0dce05bed5e8f1d9e76bac3511c057a5cfd745fa58eda7a0536a0dc7179",
+      "sha256": "130fcabe286021c4093089de362169aa92aca801b0b5b2e9f99aebf5d26abc49",
       "mode": 420
     },
     "dist/pi/package.json": {

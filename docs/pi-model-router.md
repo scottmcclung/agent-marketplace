@@ -16,6 +16,13 @@ Shared agent sources declare `deep`, `balanced`, `fast`, or `inherit`.
 | `balanced` | `devtools-router/balanced` |
 | `fast` | `devtools-router/fast` |
 
+`devtools-router/smallest` is an additional selectable virtual model for local
+experiments. Its default candidate list contains only `ollama/gemma4:e4b`.
+It has no cloud fallback. Register that exact physical model in Pi's `models.json`
+and pull it with Ollama before use. It does not change any agent's default profile.
+An explicit per-call model selection can use it without changing the agent source.
+As with the other routes, an override file can replace its candidate list.
+
 `inherit` omits the model field and keeps the parent session's selection.
 Claude and Codex retain their own profile mappings.
 
