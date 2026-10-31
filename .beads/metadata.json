@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "agent_marketplace",
+  "project_id": "c0c9e234-9372-4885-88d5-4b7325d0eba0"
+}
