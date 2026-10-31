@@ -110,7 +110,8 @@ async function readFeatures(root, input) {
       if (!FEATURE_HARNESSES.includes(harness)) fail(`${label}: unknown harness folder: ${harness}`);
     }
     if (!harnesses.size) fail(`${label}: at least one harness folder is required (${FEATURE_HARNESSES.join(', ')})`);
-    features.push({ name, manifest, harnesses: [...harnesses].sort() });
+    if (harnesses.has('pi') && !entries.includes('pi/index.mjs')) fail(`${label}: Pi features require pi/index.mjs`);
+    features.push({ name, manifest, entries, harnesses: [...harnesses].sort() });
   }
   return features;
 }
@@ -261,8 +262,13 @@ export async function generate(root) {
     }
   }
 
-  for (const file of await walk(path.join(root, 'clients/pi/extensions'))) {
-    emit(`dist/pi/extensions/${file}`, await input(`clients/pi/extensions/${file}`));
+  // Pi feature folders are opaque: each ships byte for byte as one extension directory.
+  for (const feature of features) {
+    for (const entry of feature.entries.filter(entry => entry.startsWith('pi/'))) {
+      const bytes = await input(`features/${feature.name}/${entry}`);
+      const mode = bytes.subarray(0, 2).toString() === '#!' ? 0o755 : 0o644;
+      emit(`dist/pi/extensions/${feature.name}/${entry.slice('pi/'.length)}`, bytes, mode);
+    }
   }
 
   const identity = { name: 'devtools', version: pkg.version, description: pkg.description, author: typeof pkg.author === 'string' ? { name: pkg.author } : pkg.author, license: pkg.license, repository: pkg.repository };
@@ -273,7 +279,7 @@ export async function generate(root) {
     name: pkg.name, interface: { displayName: 'Agent Marketplace' },
     plugins: [{ name: identity.name, source: { source: 'local', path: './dist/codex' }, policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' }, category: 'Productivity' }]
   }));
-  emit('dist/pi/package.json', json({ name: pkg.name, version: pkg.version, description: pkg.description, license: pkg.license, repository: pkg.repository, keywords: ['pi-package'], files: ['agents', 'prompts', 'skills', 'extensions', 'library-version.json', 'LICENSE'], pi: { extensions: ['./extensions/model-router.mjs'], skills: ['./skills'], prompts: ['./prompts'], themes: [], subagents: { agents: ['./agents'] } } }));
+  emit('dist/pi/package.json', json({ name: pkg.name, version: pkg.version, description: pkg.description, license: pkg.license, repository: pkg.repository, keywords: ['pi-package'], files: ['agents', 'prompts', 'skills', 'extensions', 'library-version.json', 'LICENSE'], pi: { extensions: ['./extensions/*/index.mjs'], skills: ['./skills'], prompts: ['./prompts'], themes: [], subagents: { agents: ['./agents'] } } }));
   for (const file of ['LICENSE']) {
     const bytes = await input(file);
     for (const id of CLIENTS) emit(`dist/${id}/${file}`, bytes);

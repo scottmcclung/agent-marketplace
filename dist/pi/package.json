@@ -17,7 +17,7 @@
   ],
   "pi": {
     "extensions": [
-      "./extensions/model-router.mjs"
+      "./extensions/*/index.mjs"
     ],
     "skills": [
       "./skills"

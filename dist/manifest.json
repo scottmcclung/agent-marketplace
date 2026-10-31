@@ -1,7 +1,7 @@
 {
   "library": "agent-marketplace",
   "version": "0.1.0",
-  "inputsDigest": "bab39741d599d933991bd96ac002607132f120c2083153a3bd98d9bb9b5d0651",
+  "inputsDigest": "4c82371ab21a9013c0cddfe35498458aa7352d7773303b00b95d7adcbf5853e7",
   "counts": {
     "agents": 10,
     "commands": 3,
@@ -77,7 +77,7 @@
       "mode": 420
     },
     "dist/claude/library-version.json": {
-      "sha256": "e85330ab95ab1ec83a3c7ea9d9cd92738a8eee54ed1b30bc49efc52284bf018b",
+      "sha256": "a56ad87176ac893d96a2b6f09fcf3453f24b7a12af09584cd7277ee079781648",
       "mode": 420
     },
     "dist/claude/skills/pandoc-converter/SKILL.md": {
@@ -181,7 +181,7 @@
       "mode": 420
     },
     "dist/codex/library-version.json": {
-      "sha256": "041a0f7a3c82b4586d79d6bac7273e64046e8b2b19a9c1a4ddf5172d1b568aaa",
+      "sha256": "d77da105942c03f16cbb4a1a1842a3a8e46d70562aa4e4976023963fb5a5d1f8",
       "mode": 420
     },
     "dist/codex/plugin.json": {
@@ -392,20 +392,20 @@
       "sha256": "5ba6c0b30727a2c172f68818d60b6cbfc2659a37b068f89d37eb0485e7d13d18",
       "mode": 420
     },
-    "dist/pi/extensions/model-router.json": {
-      "sha256": "4b077a563b5ef8ef083387d374f5c5b48e3fb90a265e32783186bdc3fb9a5026",
-      "mode": 420
-    },
-    "dist/pi/extensions/model-router.mjs": {
+    "dist/pi/extensions/model-router/index.mjs": {
       "sha256": "d8411b108e3dcd4b946b682e80f4d525f05c1be68f952f8f5c4d7fce54a9656e",
       "mode": 420
     },
+    "dist/pi/extensions/model-router/model-router.json": {
+      "sha256": "4b077a563b5ef8ef083387d374f5c5b48e3fb90a265e32783186bdc3fb9a5026",
+      "mode": 420
+    },
     "dist/pi/library-version.json": {
-      "sha256": "8a2c758f9508a19dd54218871b40339e3083298aadbe6d310f352ab28377d73d",
+      "sha256": "1dd9b9f79b8c1e98dafbb725d27c415e66f92e4efc89352664d937c54b97cdb3",
       "mode": 420
     },
     "dist/pi/package.json": {
-      "sha256": "64d34f354749d15c9108e60a5a5ebc11df38b39f97746f8f99dc2f51630b4a35",
+      "sha256": "4feed24e8f8ae2b77248932ec20e55311bc58b28606b48955f664fd193023951",
       "mode": 420
     },
     "dist/pi/prompts/devtools-plan.md": {

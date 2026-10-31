@@ -19,7 +19,7 @@
   "files": ["dist/pi", "README.md", "LICENSE"],
   "keywords": ["pi-package", "agent-skills", "claude-code", "codex"],
   "pi": {
-    "extensions": ["./dist/pi/extensions/model-router.mjs"],
+    "extensions": ["./dist/pi/extensions/*/index.mjs"],
     "skills": ["./dist/pi/skills"],
     "prompts": ["./dist/pi/prompts"],
     "themes": [],

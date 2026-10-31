@@ -16,7 +16,10 @@ const doc = file => parseDocument(text(file), file);
 async function fixture(t) {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'agent-marketplace-test-'));
   t.after(() => fs.rm(temp, { recursive: true, force: true }));
-  for (const entry of ['library', 'clients', 'scripts', 'package.json', 'LICENSE']) await fs.cp(path.join(root, entry), path.join(temp, entry), { recursive: true });
+  for (const entry of ['library', 'clients', 'features', 'scripts', 'package.json', 'LICENSE']) {
+    try { await fs.cp(path.join(root, entry), path.join(temp, entry), { recursive: true }); }
+    catch (error) { if (entry !== 'features' || error.code !== 'ENOENT') throw error; }
+  }
   return temp;
 }
 async function changeJson(temp, file, change) {
@@ -63,52 +66,102 @@ test('Pi uses explicit package-agent discovery and mapped specialist names', asy
   assert.match(text('dist/pi/prompts/devtools-work.md'), /devtools-js-software-engineer/);
 });
 
-test('root Pi package declares the bundled router extension and includes its distribution', async () => {
+test('root Pi package declares every Pi feature extension by glob and includes its distribution', async () => {
   const pkg = JSON.parse(await fs.readFile(path.join(root, 'package.json'), 'utf8'));
-  assert.deepEqual(pkg.pi.extensions, ['./dist/pi/extensions/model-router.mjs']);
+  assert.deepEqual(pkg.pi.extensions, ['./dist/pi/extensions/*/index.mjs']);
   assert.ok(pkg.files.includes('dist/pi') || pkg.files.includes('dist/pi/extensions'), 'Root package files must include the extensions directory');
 });
 
-test('standalone Pi package declares its relative router extension and includes extensions', () => {
+test('standalone Pi package declares every Pi feature extension by relative glob and includes extensions', () => {
   const pkg = json('dist/pi/package.json');
-  assert.deepEqual(pkg.pi.extensions, ['./extensions/model-router.mjs']);
+  assert.deepEqual(pkg.pi.extensions, ['./extensions/*/index.mjs']);
   assert.ok(pkg.files.includes('extensions'), 'Standalone package files must include extensions');
 });
 
-test('Pi router source is bundled byte-for-byte', async () => {
-  const source = await fs.readFile(path.join(root, 'clients/pi/extensions/model-router.mjs'));
-  assert.ok(built.has('dist/pi/extensions/model-router.mjs'), 'Missing bundled router');
-  assert.deepEqual(built.get('dist/pi/extensions/model-router.mjs').bytes, source);
+test('the model router ships as a Pi feature', async () => {
+  const manifest = JSON.parse(await fs.readFile(path.join(root, 'features/model-router/feature.json'), 'utf8'));
+  assert.equal(manifest.name, 'model-router');
+  for (const file of ['index.mjs', 'model-router.json']) {
+    const source = await fs.readFile(path.join(root, 'features/model-router/pi', file));
+    assert.ok(built.has(`dist/pi/extensions/model-router/${file}`), `Missing dist/pi/extensions/model-router/${file}`);
+    assert.deepEqual(built.get(`dist/pi/extensions/model-router/${file}`).bytes, source);
+  }
+  assert.ok(!built.has('dist/pi/extensions/model-router.mjs'), 'The old flat router path must not be emitted');
 });
 
-test('opaque Pi extension JavaScript is copied without evaluating template syntax', async t => {
+test('every file of every Pi feature is bundled byte-for-byte', async () => {
+  const expected = new Set();
+  for (const name of await fs.readdir(path.join(root, 'features'))) {
+    const dir = path.join(root, 'features', name, 'pi');
+    let files;
+    try { files = await walk(dir); } catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+    for (const file of files) {
+      const output = `dist/pi/extensions/${name}/${file}`;
+      expected.add(output);
+      assert.ok(built.has(output), `Missing ${output}`);
+      assert.deepEqual(built.get(output).bytes, await fs.readFile(path.join(dir, file)));
+    }
+  }
+  assert.ok(expected.size > 0, 'Expected at least one Pi feature file');
+  const emitted = [...built.keys()].filter(file => file.startsWith('dist/pi/extensions/'));
+  assert.deepEqual(emitted.sort(), [...expected].sort(), 'Pi extensions must come only from features/<name>/pi/');
+});
+
+test('the build no longer reads clients/pi/extensions', async t => {
+  const temp = await fixture(t);
+  await fs.rm(path.join(temp, 'clients/pi/extensions'), { recursive: true, force: true });
+  const before = await generate(temp);
+  await fs.mkdir(path.join(temp, 'clients/pi/extensions'), { recursive: true });
+  await fs.writeFile(path.join(temp, 'clients/pi/extensions/stray.mjs'), 'export default function () {}\n');
+  const outputs = await generate(temp);
+  assert.ok(!outputs.has('dist/pi/extensions/stray.mjs'), 'clients/pi/extensions must not be copied');
+  assert.deepEqual(outputs, before, 'clients/pi/extensions must not affect the input fingerprint');
+});
+
+test('Pi features without pi/index.mjs fail and name the feature', async t => {
+  const temp = await fixture(t);
+  const dir = await addFeature(temp, 'statusline', { harnesses: ['pi'] });
+  await fs.rename(path.join(dir, 'pi/index.mjs'), path.join(dir, 'pi/main.mjs'));
+  await assert.rejects(generate(temp), error => /statusline/.test(error.message) && /index\.mjs/.test(error.message));
+});
+
+test('opaque Pi feature JavaScript is copied without evaluating template syntax', async t => {
   const temp = await fixture(t);
   const source = Buffer.from('export const literal = "{{client.missing}} \\u2603";\r\n');
-  await fs.mkdir(path.join(temp, 'clients/pi/extensions'), { recursive: true });
-  await fs.writeFile(path.join(temp, 'clients/pi/extensions/model-router.mjs'), source);
+  const dir = await addFeature(temp, 'statusline', { harnesses: ['pi'] });
+  await fs.writeFile(path.join(dir, 'pi/index.mjs'), source);
   const outputs = await generate(temp);
-  assert.ok(outputs.has('dist/pi/extensions/model-router.mjs'), 'Missing bundled router');
-  assert.deepEqual(outputs.get('dist/pi/extensions/model-router.mjs').bytes, source);
+  assert.ok(outputs.has('dist/pi/extensions/statusline/index.mjs'), 'Missing bundled feature extension');
+  assert.deepEqual(outputs.get('dist/pi/extensions/statusline/index.mjs').bytes, source);
+  assert.equal(outputs.get('dist/pi/extensions/statusline/index.mjs').mode, 0o644);
 });
 
-test('all Pi extension resources are opaque inputs included in the global fingerprint', async t => {
+test('every Pi feature resource is an opaque input included in the global fingerprint', async t => {
   const temp = await fixture(t);
-  const resource = 'clients/pi/extensions/nested/resource.bin';
+  const dir = await addFeature(temp, 'statusline', { harnesses: ['pi'] });
   const opaque = Buffer.from([0, 255, 13, 10, 123, 123]);
-  await fs.mkdir(path.dirname(path.join(temp, resource)), { recursive: true });
-  await fs.writeFile(path.join(temp, resource), opaque);
+  await fs.mkdir(path.join(dir, 'pi/nested'), { recursive: true });
+  await fs.writeFile(path.join(dir, 'pi/nested/resource.bin'), opaque);
+  await fs.writeFile(path.join(dir, 'pi/nested/tool.sh'), '#!/bin/sh\necho {{x}}\n');
   const outputs = await generate(temp);
-  assert.deepEqual(outputs.get('dist/pi/extensions/nested/resource.bin').bytes, opaque);
+  assert.deepEqual(outputs.get('dist/pi/extensions/statusline/nested/resource.bin').bytes, opaque);
+  assert.equal(outputs.get('dist/pi/extensions/statusline/nested/resource.bin').mode, 0o644);
+  assert.equal(outputs.get('dist/pi/extensions/statusline/nested/tool.sh').mode, 0o755, 'shebang files must be executable');
   let digest = JSON.parse(outputs.get('dist/manifest.json').bytes).inputsDigest;
-  for (const name of ['model-router.mjs', 'model-router.json']) {
-    const original = await fs.readFile(path.join(temp, 'clients/pi/extensions', name));
-    assert.deepEqual(outputs.get(`dist/pi/extensions/${name}`).bytes, original);
+  const files = [
+    ...['index.mjs', 'nested/resource.bin', 'nested/tool.sh'].map(file => ['statusline', file]),
+    ...['index.mjs', 'model-router.json'].map(file => ['model-router', file])
+  ];
+  for (const [name, file] of files) {
+    const source = path.join(temp, 'features', name, 'pi', file);
+    const original = await fs.readFile(source);
+    assert.deepEqual(outputs.get(`dist/pi/extensions/${name}/${file}`).bytes, original);
     const changed = Buffer.concat([original, Buffer.from('\n')]);
-    await fs.writeFile(path.join(temp, 'clients/pi/extensions', name), changed);
+    await fs.writeFile(source, changed);
     const next = await generate(temp);
-    assert.deepEqual(next.get(`dist/pi/extensions/${name}`).bytes, changed);
+    assert.deepEqual(next.get(`dist/pi/extensions/${name}/${file}`).bytes, changed);
     const nextDigest = JSON.parse(next.get('dist/manifest.json').bytes).inputsDigest;
-    assert.notEqual(nextDigest, digest, `${name} must affect the input fingerprint`);
+    assert.notEqual(nextDigest, digest, `features/${name}/pi/${file} must affect the input fingerprint`);
     digest = nextDigest;
   }
 });
@@ -388,10 +441,15 @@ test('adding or removing a feature changes the fingerprint and fails check', asy
   assert.notDeepEqual(await check(temp, removed), [], 'check must fail after a feature is removed');
 });
 
-test('output without a features folder is unchanged', async t => {
+test('output without a features folder only drops feature output', async t => {
   const temp = await fixture(t);
-  await assert.rejects(fs.access(path.join(temp, 'features')));
-  assert.deepEqual(await generate(temp), built);
+  await fs.rm(path.join(temp, 'features'), { recursive: true, force: true });
+  const outputs = await generate(temp);
+  // The manifest and library-version files carry inputsDigest and checksums over all inputs, so they differ for reasons outside this comparison.
+  const owned = file => file.startsWith('dist/pi/extensions/') || file === 'dist/manifest.json' || /^dist\/[^/]+\/library-version\.json$/.test(file);
+  assert.deepEqual([...outputs.keys()].filter(file => file.startsWith('dist/pi/extensions/')), []);
+  for (const [file, output] of built) if (!owned(file)) assert.deepEqual(outputs.get(file), output, file);
+  assert.deepEqual([...outputs.keys()].filter(file => !owned(file)).sort(), [...built.keys()].filter(file => !owned(file)).sort());
 });
 
 test('feature folders without feature.json fail', async t => {

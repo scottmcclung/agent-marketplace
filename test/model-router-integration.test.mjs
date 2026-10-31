@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import factory, { createRouter } from '../clients/pi/extensions/model-router.mjs';
+import factory, { createRouter } from '../features/model-router/pi/index.mjs';
 
 const primary = Object.freeze({ provider: 'primary', id: 'large', api: 'test-api' });
 const secondary = Object.freeze({ provider: 'secondary', id: 'general', api: 'test-api' });
@@ -178,7 +178,7 @@ test('malformed profiles, virtual targets, and invalid TTLs reject without refle
 });
 
 test('fast defaults prefer current Haiku, then Luna, then the configured Ollama model', async () => {
-  const defaults = JSON.parse(await fs.readFile(new URL('../clients/pi/extensions/model-router.json', import.meta.url), 'utf8'));
+  const defaults = JSON.parse(await fs.readFile(new URL('../features/model-router/pi/model-router.json', import.meta.url), 'utf8'));
   assert.deepEqual(defaults.profiles.fast, [
     'anthropic/claude-haiku-5-5',
     'openai/gpt-6-luna',
@@ -212,7 +212,7 @@ test('factory registers default ordered profiles, thinking levels, and a UI-only
   const h = await register(t);
   await h.load();
   assert.deepEqual([...h.models.keys()], ['smallest', 'fast', 'balanced', 'deep']);
-  const defaults = JSON.parse(await fs.readFile(new URL('../clients/pi/extensions/model-router.json', import.meta.url), 'utf8'));
+  const defaults = JSON.parse(await fs.readFile(new URL('../features/model-router/pi/model-router.json', import.meta.url), 'utf8'));
   const checks = [];
   let eligible = false;
   const ctx = { modelRegistry: {

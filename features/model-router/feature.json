@@ -1,0 +1,4 @@
+{
+  "name": "model-router",
+  "description": "Pi extension that registers devtools-router virtual models (smallest, fast, balanced, deep) and routes each to the first eligible model in its ordered candidate list."
+}

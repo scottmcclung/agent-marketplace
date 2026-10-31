@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 // Credentials use Pi's getApiKeyAndHeaders(model) result union. ok: true is
 // sufficient for eligibility, including header-only and ambient authentication.
 // No continuation policy or credential-check timeout duration is assumed here.
-const moduleUrl = new URL('../clients/pi/extensions/model-router.mjs', import.meta.url);
+const moduleUrl = new URL('../features/model-router/pi/index.mjs', import.meta.url);
 const physical = (provider, id) => Object.freeze({ provider, id, api: 'test-api' });
 const preferred = physical('primary', 'large');
 const sibling = physical('primary', 'small');
