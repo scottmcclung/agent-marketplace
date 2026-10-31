@@ -33,8 +33,8 @@ virtual-to-virtual routing are not supported.
 
 ## Preferences
 
-Packaged defaults live in `clients/pi/extensions/model-router.json` and are
-copied into `dist/pi/extensions/`. Fast requests prefer Haiku, then Luna through
+Packaged defaults live in `features/model-router/pi/model-router.json` and are
+copied into `dist/pi/extensions/model-router/`. Fast requests prefer Haiku, then Luna through
 OpenAI or OpenAI Codex, then the configured Ollama `qwen3.8` model. Deep and
 balanced profiles have their own ordered lists in the same file.
 
@@ -109,9 +109,15 @@ The extension does not promise silent recovery for requests that Pi does not ret
 
 ## Packaging and compatibility
 
-Edit source assets under `clients/pi/extensions/`, not `dist/`. The build copies
-them byte-for-byte, fingerprints their contents, and declares the router in both
-the repository-root and standalone Pi package manifests.
+Edit source assets under `features/model-router/pi/`, not `dist/`. The build copies
+them byte-for-byte to `dist/pi/extensions/model-router/` and fingerprints their
+contents. Both Pi package manifests declare extensions by glob. The
+repository-root `package.json` declares `./dist/pi/extensions/*/index.mjs`.
+The standalone `dist/pi/package.json` declares `./extensions/*/index.mjs`.
+
+The installed router path is `extensions/model-router/index.mjs`. Earlier builds
+installed it at `extensions/model-router.mjs`. If your Pi settings filter names
+the old path, update it.
 
 The extension requires Pi's `registerVirtualModel` API. Subagents need to share
 the parent's model runtime so the registered routes remain usable when child

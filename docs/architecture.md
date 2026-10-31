@@ -41,7 +41,7 @@ a build. CI checks them before a release.
 
 Each target includes `library-version.json`: library version, client, agent
 mode, and an input SHA-256 fingerprint. The fingerprint includes shared sources,
-client configurations/templates and extension assets, compiler code, package
+client configurations/templates, every file under `features/`, compiler code, package
 metadata, and the license.
 It intentionally excludes timestamps and the current commit SHA to avoid
 self-referential or non-reproducible builds. `dist/manifest.json` records output
@@ -71,11 +71,13 @@ marketplace versions separately only for deliberate testing, not normal use.
   discovers from Pi-installed packages.
 - Agents are prefixed `devtools-` to avoid collisions in Pi's flat namespace.
 - Commands become prompt templates; skills remain skills.
-- The same package declares its model router in `pi.extensions`. Agent model
-  profiles map to `devtools-router/deep`, `devtools-router/balanced`, and
-  `devtools-router/fast`. Ordered physical-model preferences and the credential
-  cache live in the extension, not in shared prompts or the subagent extension.
-  See [Pi model routing](pi-model-router.md).
+- The same package declares its extensions in `pi.extensions` by the glob
+  `extensions/*/index.mjs`; each feature is copied from `features/<name>/pi/`
+  to `extensions/<name>/`. Agent model profiles map to `devtools-router/deep`,
+  `devtools-router/balanced`, and `devtools-router/fast`. Ordered
+  physical-model preferences and the credential cache live in the extension,
+  not in shared prompts or the subagent extension. See
+  [Pi model routing](pi-model-router.md).
 - The consumer installs `@tintinweb/pi-subagents` as its own Pi package. It is
   not bundled or assumed to load just because npm resolves it transitively.
 - Agent defaults append to the parent's system prompt, disable extra

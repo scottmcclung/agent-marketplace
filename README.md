@@ -15,7 +15,8 @@ library/                       # EDIT: shared prompt documents and skill assets
 clients/                       # EDIT: host value maps and output templates
   claude/{config.json,templates/}
   codex/{config.json,templates/}
-  pi/{config.json,templates/,extensions/}
+  pi/{config.json,templates/}
+features/                      # EDIT: harness features, e.g. model-router/{feature.json,pi/}
 scripts/                       # Node.js build / validation tooling
 .claude-plugin/marketplace.json # GENERATED: Claude catalog
 .agents/plugins/marketplace.json# GENERATED: Codex catalog
