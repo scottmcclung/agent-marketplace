@@ -2,8 +2,8 @@
 
 A Claude Code status line shown under the prompt. It shows the repository and
 branch, whether the working tree is clean, today's commit count, the model,
-context window usage, the 30-day cost, the current block cost, and the time
-until the rate limit resets.
+context window usage, the 30-day cost, the 30-day cache hit rate, the current
+block cost, and the time until the rate limit resets.
 
 ## What it runs
 
@@ -17,11 +17,15 @@ call:
 ## What it reads and writes
 
 - It writes one `<session-id>.json` file per session into
-  `~/.claude/mods-data/statusline/ledger/` once the session reports a cost.
+  `~/.claude/mods-data/statusline/ledger/` once the session reports a cost or
+  a turn reports token usage. Each file stores cost and token counts per hour.
   It reads every ledger file there modified in the last 30 days to total cost
-  across sessions. It never deletes them, so the folder grows over time.
+  and cache hit rate across sessions. It never deletes them, so the folder
+  grows over time.
 - It reads `HOME` and the session's id, working directory, model, usage,
   cost, and rate limits from Claude Code.
+- It reads per-turn token usage (input, cache-write, cache-read) from Claude
+  Code's turn events, including subagent turns.
 
 ## Types
 

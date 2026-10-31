@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, FsEntry, Register, SessionContextUsage, SessionRateLimit } from 'claude-code'
-import { emptyLedger, isLedger, isStale, record, spentSince, WINDOW_MS } from './ledger'
-import type { SessionLedger } from './ledger'
+import { cacheRateSince, emptyLedger, isLedger, isStale, record, recordTokens, spentSince, WINDOW_MS } from './ledger'
+import type { SessionLedger, TurnUsage } from './ledger'
 import type { Segment, StatusRows } from '../types'
 
 const SEPARATOR: Segment = { text: ' │ ' }
@@ -125,23 +125,54 @@ async function readLedgers(engine: EngineInterface, dir: string, nowMs: number):
   return ledgers
 }
 
-async function refresh(engine: EngineInterface): Promise<void> {
+// The tail of this session's ledger updates. The hooks module keeps one
+// environment for the process, so this lasts from event to event. Subagents
+// can finish together, and their read-modify-write passes must not interleave:
+// one would overwrite the other's tokens, and a cost read before the other's
+// write would look lower than the stored total, so record would take it for a
+// /clear and count the whole session again.
+let persisting: Promise<void> = Promise.resolve()
+
+// Runs persistOnce after every earlier call has finished, failed or not.
+function persist(engine: EngineInterface, turnUsage: TurnUsage | undefined): Promise<void> {
+  const run: Promise<void> = persisting.then(() => persistOnce(engine, turnUsage))
+  persisting = run.catch(() => undefined)
+  return run
+}
+
+// Updates this session's ledger with the turn's tokens and the session's cost.
+// The file is written once there is a cost, and also when a turn brings tokens,
+// so a subagent turn that ends before the session reports a cost is not lost.
+// The cost is read here, inside the queue, so each pass sees a total no older
+// than the one the pass before it stored.
+async function persistOnce(engine: EngineInterface, turnUsage: TurnUsage | undefined): Promise<void> {
+  const nowMs: number = await engine.clock.now()
+  const usage = await engine.session.usage()
+  if (usage.cost === undefined && turnUsage === undefined) return
+  const path: string = `${await ledgerDir(engine)}/${await engine.session.id()}.json`
+  let stored: unknown = undefined
+  try {
+    stored = JSON.parse(await engine.fs.read(path))
+  } catch {
+    stored = undefined
+  }
+  let ledger: SessionLedger = isLedger(stored) ? stored : emptyLedger()
+  if (turnUsage !== undefined) ledger = recordTokens(ledger, turnUsage, nowMs)
+  if (usage.cost !== undefined) ledger = record(ledger, usage.cost.usd, nowMs)
+  await engine.fs.write(path, JSON.stringify(ledger))
+}
+
+function thirtyDays(ledgers: readonly SessionLedger[], nowMs: number): Segment[] {
+  const cost: string = `🚒 30D ${usd(spentSince(ledgers, nowMs - WINDOW_MS))}`
+  const rate: number | undefined = cacheRateSince(ledgers, nowMs - WINDOW_MS)
+  const text: string = rate === undefined ? cost : `${cost} · ♻️ ${Math.floor(rate * 100)}% cached`
+  return [{ text, color: PINK }]
+}
+
+async function redraw(engine: EngineInterface): Promise<void> {
   const nowMs: number = await engine.clock.now()
   const usage = await engine.session.usage()
   const dir: string = await ledgerDir(engine)
-  const path: string = `${dir}/${await engine.session.id()}.json`
-
-  if (usage.cost !== undefined) {
-    let stored: unknown = undefined
-    try {
-      stored = JSON.parse(await engine.fs.read(path))
-    } catch {
-      stored = undefined
-    }
-    const ledger: SessionLedger = isLedger(stored) ? stored : emptyLedger()
-    await engine.fs.write(path, JSON.stringify(record(ledger, usage.cost.usd, nowMs)))
-  }
-
   const ledgers: SessionLedger[] = await readLedgers(engine, dir, nowMs)
   const block: SessionRateLimit | undefined = usage.rateLimits.find((l: SessionRateLimit) => l.kind === 'five_hour')
   // Off a subscription there is no five-hour window, so the session's own cost stands in.
@@ -153,7 +184,7 @@ async function refresh(engine: EngineInterface): Promise<void> {
     joinParts([repo, commits, model, contextInfo(usage.context)]),
     joinParts([
       [{ text: `🔥 Live ${usd(live)}`, color: GREEN }],
-      [{ text: `🚒 30D ${usd(spentSince(ledgers, nowMs - WINDOW_MS))}`, color: PINK }],
+      thirtyDays(ledgers, nowMs),
       resetTimer(block, nowMs),
     ]),
   ]
@@ -164,13 +195,16 @@ async function refresh(engine: EngineInterface): Promise<void> {
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const result = await next(e)
-    await refresh($)
+    await persist($, undefined)
+    await redraw($)
     return result
   })
 
   on('turn.complete', async ($, e, next) => {
     const result = await next(e)
-    if (e.agentId === undefined) await refresh($)
+    // Subagent turns count toward the totals, but only the main turn redraws.
+    await persist($, e.usage)
+    if (e.agentId === undefined) await redraw($)
     return result
   })
 

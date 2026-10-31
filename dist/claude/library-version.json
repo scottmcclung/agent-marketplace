@@ -1,7 +1,7 @@
 {
   "library": "agent-marketplace",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "client": "claude",
-  "inputsDigest": "e68a6d32b32b63c6bb1eb721274c0c9b33d9a9e08a11cb93e72144df04d5b5fa",
+  "inputsDigest": "5b63326df117b0e214a907a5b630ed69436816f10c3203b4d4ebf0246b0151b5",
   "agentMode": "native"
 }

@@ -1,7 +1,7 @@
 {
   "library": "agent-marketplace",
-  "version": "0.1.0",
-  "inputsDigest": "e68a6d32b32b63c6bb1eb721274c0c9b33d9a9e08a11cb93e72144df04d5b5fa",
+  "version": "0.2.0",
+  "inputsDigest": "5b63326df117b0e214a907a5b630ed69436816f10c3203b4d4ebf0246b0151b5",
   "counts": {
     "agents": 10,
     "commands": 3,
@@ -17,11 +17,11 @@
       "mode": 420
     },
     ".claude-plugin/marketplace.json": {
-      "sha256": "46ee538ba94ad97bb0699dc51f0d53ebd5814d478cbde68a283db3ca1152b9a6",
+      "sha256": "868c2f43457697cd6df8c2158b6dcc0fbfa92cb217d44cf5640b9aac55eb8282",
       "mode": 420
     },
     "dist/claude-plugins/statusline/.claude-plugin/plugin.json": {
-      "sha256": "7bece8178208333519834a2bfd5f571772e68087a50f73b0eb8b4ad022ffda1f",
+      "sha256": "a08307877063d4933b03df57e8784b18dc5d9bdc30aa6064c942d11f5497ef01",
       "mode": 420
     },
     "dist/claude-plugins/statusline/hooks/hooks.json": {
@@ -29,11 +29,11 @@
       "mode": 420
     },
     "dist/claude-plugins/statusline/hooks/ledger.ts": {
-      "sha256": "889f9435606c7b6321925919a4d543c6bfb3aa5d88860b4a51e6e8f3c1400603",
+      "sha256": "a265ac81c64289a8089e594fe0d35890fa3b6648ff93fb138eab402e1018d33b",
       "mode": 420
     },
     "dist/claude-plugins/statusline/hooks/register.tsx": {
-      "sha256": "e4afd8a31bc8986554e007eae787774bc033467b7b71668d5d5da467c2b4634c",
+      "sha256": "f0b096e32ddcc38777ffba01d4ab0e640d9af5bc2022a9bf6390123b3043a324",
       "mode": 420
     },
     "dist/claude-plugins/statusline/tsconfig.json": {
@@ -45,7 +45,7 @@
       "mode": 420
     },
     "dist/claude/.claude-plugin/plugin.json": {
-      "sha256": "8c5f5666fb85f57c0dc2e414afe940819b4d45b35a3abbd12d4d61114a69b277",
+      "sha256": "f8bbdc4fa3e09d5c2e53d0bb35992b76ce01410d2eca6f71f9174fc18166411b",
       "mode": 420
     },
     "dist/claude/LICENSE": {
@@ -105,7 +105,7 @@
       "mode": 420
     },
     "dist/claude/library-version.json": {
-      "sha256": "d38aef181a02e32bc9841bfafdaa0ad4107bd0a3654a89ae5eb6b666825c9233",
+      "sha256": "55ec874d36e885d4606fce0309d7ea79f874e9f4cee30696234d9cfe5db9df37",
       "mode": 420
     },
     "dist/claude/skills/pandoc-converter/SKILL.md": {
@@ -209,11 +209,11 @@
       "mode": 420
     },
     "dist/codex/library-version.json": {
-      "sha256": "544746e6a7bcc385333b2d43a887060b8ff013a5bee376f052d3bb7bd001bb2d",
+      "sha256": "afc57a3b244106f8bcf8a51dfe06d2bb6781e3f82256c3ec5d75d8dc8d0e80d5",
       "mode": 420
     },
     "dist/codex/plugin.json": {
-      "sha256": "a69a15bf2530c77c05077f66fdde8432d269383be2c4b46615534a6ef2905af3",
+      "sha256": "4cca62b4f7ac97ca254c16c5cf129252e481f9e460b130954c440ce9fe7c98e3",
       "mode": 420
     },
     "dist/codex/skills/devtools-crystal-code-reviewer/SKILL.md": {
@@ -429,11 +429,11 @@
       "mode": 420
     },
     "dist/pi/library-version.json": {
-      "sha256": "acb2709c561b155cfe98420ffa7520a6b4938ae5eb8c6b8e9dfa36ac1956dc34",
+      "sha256": "38b95c6c5b68661113847858ff0419ba04d941590ed334a5030ae7fce8ba7981",
       "mode": 420
     },
     "dist/pi/package.json": {
-      "sha256": "4feed24e8f8ae2b77248932ec20e55311bc58b28606b48955f664fd193023951",
+      "sha256": "5da0e13f03767b89dc5a0a0ef93e142cf5437f5085c797878b3534134d9851db",
       "mode": 420
     },
     "dist/pi/prompts/devtools-plan.md": {
