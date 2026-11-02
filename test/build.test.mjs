@@ -30,8 +30,8 @@ async function changeJson(temp, file, change) {
   await fs.writeFile(path.join(temp, file), JSON.stringify(value));
 }
 
-test('imports all ten agents, three commands, three skills, one Claude feature, and one Pi feature', () => {
-  assert.deepEqual(json('dist/manifest.json').counts, { agents: 10, commands: 3, skills: 3, features: { claude: 1, pi: 1 } });
+test('imports all ten agents, three commands, four skills, one Claude feature, and one Pi feature', () => {
+  assert.deepEqual(json('dist/manifest.json').counts, { agents: 10, commands: 3, skills: 4, features: { claude: 1, pi: 1 } });
 });
 
 test('all native distributions share the same version and input fingerprint', async () => {
@@ -242,8 +242,16 @@ test('skill scripts and references are copied byte-for-byte, not evaluated', asy
     assert.equal(built.get(`dist/${client}/skills/playwright-cli/references/tracing.md`).mode, 0o644);
   }
   for (const file of await walk(path.join(root, 'library/skills'))) {
-    if (file.endsWith('.hbs')) continue;
+    if (file.endsWith('.hbs') || file.split('/')[1] === 'evals') continue;
     for (const client of ['claude', 'pi', 'codex']) assert.ok(built.has(`dist/${client}/skills/${file}`), file);
+  }
+});
+
+test('skill eval suites stay in the library and are not packaged', async () => {
+  const evalFiles = (await walk(path.join(root, 'library/skills'))).filter(file => file.split('/')[1] === 'evals');
+  assert.ok(evalFiles.length > 0, 'expected at least one skill eval suite in the library');
+  for (const client of ['claude', 'pi', 'codex']) {
+    assert.deepEqual([...built.keys()].filter(file => file.startsWith(`dist/${client}/skills/`) && file.split('/')[4] === 'evals'), [], client);
   }
 });
 

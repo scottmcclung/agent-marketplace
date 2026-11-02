@@ -1,0 +1,117 @@
+[
+  {
+    "query": "add a 'last_login' column to the users table and show it on the admin dashboard. the dashboard code is in src/admin/UserList.tsx and it's kind of a mess, lots of inline styles and a 300 line render function",
+    "should_trigger": true
+  },
+  {
+    "query": "there's a bug in billing/invoice.py where discounts get applied twice when a customer has both a coupon and a loyalty tier. can you fix it? the calculate_total function has like 6 levels of nested ifs",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to add Spanish support to our email templates. right now every template has hardcoded English strings scattered through the python that builds them in notifications/emails.py",
+    "should_trigger": true
+  },
+  {
+    "query": "ok I've tried twice to add retry logic to the payment webhook handler and both times it broke something else. handler is in api/webhooks/stripe.js. can you take a crack at it",
+    "should_trigger": true
+  },
+  {
+    "query": "can you make the export button in reports also support xlsx? it already does pdf and csv, the logic is in ReportExporter.java",
+    "should_trigger": true
+  },
+  {
+    "query": "while you're in config_loader.go fixing the env var parsing bug, feel free to clean up anything else that looks off",
+    "should_trigger": true
+  },
+  {
+    "query": "add rate limiting to the /search endpoint in our express app. app.js has all the routes defined in one file and middleware is applied kind of randomly",
+    "should_trigger": true
+  },
+  {
+    "query": "our legacy order processing module needs to support partial refunds. it lives in app/services/order_service.rb and nobody on the team really understands it anymore",
+    "should_trigger": true
+  },
+  {
+    "query": "refactor the auth middleware so it's easier to add SSO next sprint. don't change how it works today",
+    "should_trigger": true
+  },
+  {
+    "query": "add a new endpoint GET /projects/:id/members, there's a new file for it but it needs to hook into the existing permissions check in lib/permissions.py",
+    "should_trigger": true
+  },
+  {
+    "query": "write me a python script from scratch that reads a folder of CSVs and merges them into one file, dedupe on the email column",
+    "should_trigger": false
+  },
+  {
+    "query": "can you explain what this function does? pasting it below. I inherited it and want to understand it before touching anything",
+    "should_trigger": false
+  },
+  {
+    "query": "do a tech debt audit of our repo and give me a prioritized list of what we should refactor this quarter",
+    "should_trigger": false
+  },
+  {
+    "query": "review this PR diff before I merge it, mostly worried about SQL injection and missing error handling",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the main argument in Kent Beck's Tidy First book? is it worth reading for a team lead",
+    "should_trigger": false
+  },
+  {
+    "query": "the checkout page throws 'undefined is not a function' only in safari. I don't know where it's coming from yet, help me figure out the cause",
+    "should_trigger": false
+  },
+  {
+    "query": "write unit tests for the existing DateFormatter class, don't change the class itself",
+    "should_trigger": false
+  },
+  {
+    "query": "set up a new Next.js project with tailwind and a basic landing page",
+    "should_trigger": false
+  },
+  {
+    "query": "design the database schema for a new appointment booking service, we haven't written any code yet",
+    "should_trigger": false
+  },
+  {
+    "query": "our team keeps mixing refactors into feature PRs and reviews are painful. can you draft a short PR guidelines doc for the team",
+    "should_trigger": false
+  },
+  {
+    "query": "add a `status` query param to GET /api/orders so the frontend can ask for only shipped or only pending orders. handler is in internal/orders/handler.go",
+    "should_trigger": true,
+    "holdout": true
+  },
+  {
+    "query": "we need to support PayPal alongside Stripe at checkout. the payment code lives in app/services/payment_processor.rb",
+    "should_trigger": true,
+    "holdout": true
+  },
+  {
+    "query": "can you add a --dry-run flag to our deploy CLI in cmd/deploy/main.go? it should print what it would do without actually doing it",
+    "should_trigger": true,
+    "holdout": true
+  },
+  {
+    "query": "make the user search in UserRepository.kt also match on email. right now it only matches on name",
+    "should_trigger": true,
+    "holdout": true
+  },
+  {
+    "query": "typo in the error message in src/auth/login.ts, it says 'Invalid pasword'. can you fix it to 'Invalid password'",
+    "should_trigger": false,
+    "holdout": true
+  },
+  {
+    "query": "bump lodash from 4.17.20 to 4.17.21 in package.json, there's a security advisory on the old one",
+    "should_trigger": false,
+    "holdout": true
+  },
+  {
+    "query": "change DEFAULT_PAGE_SIZE in api/pagination.py from 20 to 50, product wants bigger pages",
+    "should_trigger": false,
+    "holdout": true
+  }
+]

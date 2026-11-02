@@ -12,6 +12,7 @@ library/                       # EDIT: shared prompt documents and skill assets
   agents/*.md.hbs
   commands/*.md.hbs
   skills/<name>/SKILL.md.hbs
+  skills/<name>/evals/         # skill test suite; not packaged
 clients/                       # EDIT: host value maps and output templates
   claude/{config.json,templates/}
   codex/{config.json,templates/}
@@ -169,7 +170,8 @@ Agents (canonical names): `js-software-engineer`, `dev-ops-engineer`,
 
 Commands: `work`, `plan`, `reflection`.
 
-Skills: `playwright-cli`, `pandoc-converter`, `tailscale-serve-sidecar`.
+Skills: `playwright-cli`, `pandoc-converter`, `tailscale-serve-sidecar`,
+`principle-make-the-change-easy`.
 
 ## Runtime prerequisites and safety
 

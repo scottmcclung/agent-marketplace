@@ -250,7 +250,9 @@ export async function generate(root) {
       const native = { ...meta, name, ...(config.skillAttributes[meta.name] ?? {}) };
       emit(`${base}/skills/${name}/SKILL.md`, docTemplate('skill', doc.source, native, body));
     }
-    for (const file of skillFiles.filter(file => !file.endsWith('/SKILL.md.hbs'))) {
+    // A skill's evals/ folder holds its test suite and fixture code for authors.
+    // Clients never use it, so it stays in the library and out of every package.
+    for (const file of skillFiles.filter(file => !file.endsWith('/SKILL.md.hbs') && file.split('/')[1] !== 'evals')) {
       const source = `library/skills/${file}`;
       const bytes = await input(source);
       const [skill, ...parts] = file.split('/');

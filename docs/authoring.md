@@ -103,7 +103,9 @@ Read [the guide](references/guide.md) relative to this skill directory.
 Skill names must match their containing directory, use lowercase letters,
 numbers, and single hyphens, and be no longer than 64 characters. Descriptions
 must be at most 1024 characters. References/scripts/assets remain together in
-every output. Source symlinks are rejected so packages cannot accidentally
+every output. A skill's `evals/` folder is the exception. It holds the skill's
+test suite and fixture code for authors, stays in the library, and is left out
+of every output. Source symlinks are rejected so packages cannot accidentally
 include files from outside the library.
 
 Only files ending in `.hbs` are rendered, and the suffix is removed in the

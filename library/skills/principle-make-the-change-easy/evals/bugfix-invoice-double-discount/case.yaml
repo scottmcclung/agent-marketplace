@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: bugfix-invoice-double-discount
+expected_outcome: |
+  The coupon discount is applied once when a customer has both a coupon and a
+  loyalty tier, so a $100 order with SAVE10 and gold comes to 80.0, not 70.0.
+  The existing tests still pass. The skill is used before the first edit to
+  invoice.py, usually after a debugging skill has found the cause. Any
+  restructuring of the nested ifs happens as its own step, separate from the fix.
+context:
+  scaffold_script: place-files.sh

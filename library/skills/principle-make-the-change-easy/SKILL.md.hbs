@@ -1,0 +1,72 @@
+---
+name: principle-make-the-change-easy
+description: "Use before changing the logic of existing code: adding a feature or option, fixing a bug, refactoring, or cleaning up. This includes requests that sound routine, because new behavior has to fit into structure that already exists. Check it before exploring the files. When debugging, use it once the cause is found and before writing the fix. Not for edits that only change a literal value, message text, version number, or config setting, and not for code written from scratch, explaining code, reviews, audits, or adding tests only. Separates structure changes from behavior changes and decides which tidyings to do first, after, or later."
+---
+
+# Make the change easy, then make the easy change
+
+Kent Beck: "For each desired change, make the change easy (warning: this
+may be hard), then make the easy change."
+
+## The principle
+
+A **behavior change** alters what the program does. A **structure
+change** alters how the code is arranged and leaves behavior identical.
+Never mix the two in one step, commit, or review.
+
+When a behavior change looks hard, the difficulty usually lives in the
+structure around it. Fix the structure first, and the behavior change
+becomes small.
+
+## Two questions for every tidying
+
+Beck calls small structure changes "tidyings." Each raises two separate
+questions. Answer them in order.
+
+**1. Is it worth doing?** For an agent, tidying effort is cheap. The real
+costs are reviewer time and the risk of an unnoticed behavior change. Do
+it when it makes the code easier to read or change, tests or an output
+comparison can confirm behavior is unchanged, and a reviewer can confirm
+it is structure only in under a minute. Skip it when the code is rarely
+touched, about to be removed, or can't be verified. This is Beck's
+"never."
+
+**2. When does it happen?** Timing never turns a yes into a no.
+- **First**, when it makes the behavior change easier. The default for
+  code the change will touch or read.
+- **After**, when the change revealed the right structure, or left code
+  to clean while context is fresh.
+- **Later**, when it isn't connected to this change. Record it for the
+  user to schedule.
+
+Tidyings are small and reversible: guard clauses for nested
+conditionals, deleting dead code, moving a declaration next to its use,
+extracting a named helper, naming a constant, reordering code to read
+top to bottom, grouping related code, or adding a new interface over the
+old implementation. A large or risky structure change is not a tidying.
+Ask the user before starting it.
+
+## How to apply it
+
+1. State the behavior change in one sentence.
+2. Describe the structure that would make it a few obvious lines.
+3. List the obstacles between here and there.
+4. Ask both questions of each.
+5. Do the "first" tidyings. Confirm behavior is unchanged.
+6. Make the behavior change as its own step. Verify it. If it still
+   feels hard, go back to step 2.
+7. Do the "after" tidyings as separate steps.
+8. Report "later" items without doing them.
+
+Stop and report to the user when tidying spreads beyond the code the
+change touches, a tidying diff is too large to confirm quickly, or a
+tidying needs a design decision the user should make.
+
+## Example
+
+Add CSV export. The export logic is one long function with nested
+conditionals per format.
+- First: guard clauses, then extract each format into its own function.
+  Tests pass, output unchanged.
+- Change: add a CSV function and one dispatch line. Test it.
+- Later: the format functions repeat file-writing code. Noted, not done.

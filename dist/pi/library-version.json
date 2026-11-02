@@ -1,7 +1,7 @@
 {
   "library": "agent-marketplace",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "client": "pi",
-  "inputsDigest": "5b63326df117b0e214a907a5b630ed69436816f10c3203b4d4ebf0246b0151b5",
+  "inputsDigest": "c6adc2a5190087138e4ed34ad9a3b7b4f6f4b6b3e81247f0c3c3e8337c411c84",
   "agentMode": "native"
 }
