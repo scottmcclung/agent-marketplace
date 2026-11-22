@@ -2,7 +2,7 @@
 name: tailscale-serve-sidecar
 description: Configure a Tailscale serve sidecar container in Docker Compose to expose services over your tailnet with HTTPS, funnel, or TCP/UDP proxying. Use when setting up Tailscale as a reverse proxy sidecar, exposing Docker services to a tailnet, configuring Tailscale Serve or Funnel in containers, or adding tailnet connectivity to existing compose stacks.
 ---
-<!-- Generated from library/skills/tailscale-serve-sidecar/SKILL.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/skills/tailscale-serve-sidecar/SKILL.md.hbs; edit library/ and clients/, not this file. -->
 
 # Tailscale Serve Sidecar for Docker Compose
 

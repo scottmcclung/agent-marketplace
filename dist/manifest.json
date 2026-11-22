@@ -1,387 +1,432 @@
 {
   "library": "agent-marketplace",
   "version": "0.3.0",
-  "inputsDigest": "c6adc2a5190087138e4ed34ad9a3b7b4f6f4b6b3e81247f0c3c3e8337c411c84",
+  "inputsDigest": "a86f0ebdfaa2044d7852f0ac829cd4f30405b25d2b7d21c4f54246b694fe2572",
   "counts": {
     "agents": 10,
     "commands": 3,
-    "skills": 4,
+    "skills": 7,
     "features": {
       "claude": 1,
       "pi": 1
-    }
+    },
+    "plugins": 2
   },
   "files": {
     ".agents/plugins/marketplace.json": {
-      "sha256": "e30332a4215f8d4ccd1b74047c7e66ecfaa6eb84ef4d1ba3db4001f1a76efde6",
+      "sha256": "335f6d8df7560273bd381a738317e58acc130d050c8e39c0d98a912e130c29b6",
       "mode": 420
     },
     ".claude-plugin/marketplace.json": {
-      "sha256": "868c2f43457697cd6df8c2158b6dcc0fbfa92cb217d44cf5640b9aac55eb8282",
+      "sha256": "e5c991337af2f3fce83e8eef4e91b86eb155f13ee79967fc024fa58f08e30351",
       "mode": 420
     },
-    "dist/claude-plugins/statusline/.claude-plugin/plugin.json": {
-      "sha256": "2cd87399d76d94ea4c7dd7fa175ebb9b9a8c0cb80f7b457fa2fca23351592891",
-      "mode": 420
-    },
-    "dist/claude-plugins/statusline/hooks/hooks.json": {
-      "sha256": "d842d789476d67282d0f04b7e5fdc68a3d981ccec65dd79cfa2d11eed13fb828",
-      "mode": 420
-    },
-    "dist/claude-plugins/statusline/hooks/ledger.ts": {
-      "sha256": "a265ac81c64289a8089e594fe0d35890fa3b6648ff93fb138eab402e1018d33b",
-      "mode": 420
-    },
-    "dist/claude-plugins/statusline/hooks/register.tsx": {
-      "sha256": "f0b096e32ddcc38777ffba01d4ab0e640d9af5bc2022a9bf6390123b3043a324",
-      "mode": 420
-    },
-    "dist/claude-plugins/statusline/tsconfig.json": {
-      "sha256": "4087cf0ba92fde503ed0e7c56f37bcb26ad0c085873f10219d0336c0f19b5a8f",
-      "mode": 420
-    },
-    "dist/claude-plugins/statusline/types/index.d.ts": {
-      "sha256": "173715f25f2aa9622a0627821ed91a6a0ac08814a2c764236c834f69701055ec",
-      "mode": 420
-    },
-    "dist/claude/.claude-plugin/plugin.json": {
+    "dist/claude/devtools/.claude-plugin/plugin.json": {
       "sha256": "5089e2ae7ea6575c3437ae38989bf7ffca18eb742ab788d5073d2167fc51ff4b",
       "mode": 420
     },
-    "dist/claude/LICENSE": {
+    "dist/claude/devtools/LICENSE": {
       "sha256": "e97926590a7381904af79d3713bdf8e8f4f17fc72059094ab37f96b9b4e67db2",
       "mode": 420
     },
-    "dist/claude/agents/crystal-code-reviewer.md": {
-      "sha256": "1aa294c412e0c80ce2de94f28600def77c8d1b7788e9718b48f863a1ac40acfe",
+    "dist/claude/devtools/agents/crystal-code-reviewer.md": {
+      "sha256": "ef2e4ded725006a8d5c93f2f3fee8f53fd971a2335788bf29649c31f47373243",
       "mode": 420
     },
-    "dist/claude/agents/crystal-lang-engineer.md": {
-      "sha256": "cfd99339c42e77db836df54dd71e8b4b10de23dc6139ff1da7bc76b1c035a46e",
+    "dist/claude/devtools/agents/crystal-lang-engineer.md": {
+      "sha256": "2e8451f0bd85126b9cef45ae8dd7c4000d711c12dc05daa57a1e03b6891ed671",
       "mode": 420
     },
-    "dist/claude/agents/deno-javascript-expert.md": {
-      "sha256": "99c0dab820f281e9596d7d05449e8de171540e1e4fa8d0ab2e448831eb69b377",
+    "dist/claude/devtools/agents/deno-javascript-expert.md": {
+      "sha256": "7ea1d4100d1566974de7b7db81da950ebf15e1630aa0948531348832ca337223",
       "mode": 420
     },
-    "dist/claude/agents/dev-ops-engineer.md": {
-      "sha256": "d910a4eba5932ff0639321d54a7d5cd29b8e63764bc464eed81db331b235f5bb",
+    "dist/claude/devtools/agents/dev-ops-engineer.md": {
+      "sha256": "59113b3f03102f92d2bc37e4a50d308a65afef950f34489581bfa75e7d91db98",
       "mode": 420
     },
-    "dist/claude/agents/diagram-expert.md": {
-      "sha256": "7418080cc3e341741b4d7ed3d26592ee11ad5ef2b21526467deab2f866921b53",
+    "dist/claude/devtools/agents/diagram-expert.md": {
+      "sha256": "ad6280c88b2ef725a35a61aa329d5618122b85e6630ae5bea33cf113c5f13d0a",
       "mode": 420
     },
-    "dist/claude/agents/js-software-engineer.md": {
-      "sha256": "96ad541cd3519dd399ce70c8d7d6898b7386a8c6814121da05fccb414b5aac8c",
+    "dist/claude/devtools/agents/js-software-engineer.md": {
+      "sha256": "7db9fca56953a66369baa500d55a8d3524ab49ded1bdd86a71ba164a99243480",
       "mode": 420
     },
-    "dist/claude/agents/laravel-php-expert.md": {
-      "sha256": "ea061c039c6335693fc6cda57c0246b871c31d0cdd95cefe0614ac9cb0dc4de7",
+    "dist/claude/devtools/agents/laravel-php-expert.md": {
+      "sha256": "85a36d915d46512c909ed657acfc3fd58835aab5292ab766e191dfc21f7dc3e4",
       "mode": 420
     },
-    "dist/claude/agents/salesforce-apex-test-engineer.md": {
-      "sha256": "56d6047d4c948eeeb171e671dc644623632413a3ee68b6236d1cea5845c087b1",
+    "dist/claude/devtools/agents/salesforce-apex-test-engineer.md": {
+      "sha256": "2c9ebd04c6ad8967de0cf115de006396e82fb2202bb86516970f46a3746f0113",
       "mode": 420
     },
-    "dist/claude/agents/salesforce-platform-expert.md": {
-      "sha256": "28f0a35e00744d733fe3c0d47223745e2ed532419a0f55f793c34553ba07f7ee",
+    "dist/claude/devtools/agents/salesforce-platform-expert.md": {
+      "sha256": "3e4e6da02194c3495bb84229e21d9e041f93e2e65ec5ceaf4fdbf9378ef6f93c",
       "mode": 420
     },
-    "dist/claude/agents/uat-specialist.md": {
-      "sha256": "78b49c1ea7ae04fbc8798dd773d4a1f700c740c6b2e029fdccbcff00b5c1739f",
+    "dist/claude/devtools/agents/uat-specialist.md": {
+      "sha256": "8bca70de834f2228a7afb16374f2ce52546431dca25585324b91d0ba3c7ad917",
       "mode": 420
     },
-    "dist/claude/commands/plan.md": {
-      "sha256": "691316b5b86c8c705993781929d3cce35ecdab245609d5a6489ff3f0075c9468",
+    "dist/claude/devtools/commands/plan.md": {
+      "sha256": "5d6dc6bc93c7b0dc8a131f449d2b6516b4edd69820e1499f5ad4b158e8f6f2a0",
       "mode": 420
     },
-    "dist/claude/commands/reflection.md": {
-      "sha256": "491d1039b54e32122830283ff6247ae83e0f37b0c011956470e239b15e39a3b3",
+    "dist/claude/devtools/commands/reflection.md": {
+      "sha256": "3fcf45e7d00bf7065f11ccadfb6acd8dad797a4dc821aea48f240659c29f16d9",
       "mode": 420
     },
-    "dist/claude/commands/work.md": {
-      "sha256": "13f6234451131e6ed0564a6ad8a87bc35cbc4cde329fd774f455743bdb04cc10",
+    "dist/claude/devtools/commands/work.md": {
+      "sha256": "7b5501c958ae2a5e3b4bd9a8ba3b5e8087eb41d9d4fdc119bf465aaafbb3a3eb",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/pandoc-converter/SKILL.md": {
+      "sha256": "947034d350388b2084a281bf978c68bbb06e95ef938db5eae6296bd45540fd7c",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/pandoc-converter/references/conversion_recipes.md": {
+      "sha256": "768308f1c239aa6d966366f35d2e5a934f01d975df4ec68045392794530ac302",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/pandoc-converter/references/filters_and_templates.md": {
+      "sha256": "a0c8c521b80b207fbd11961005c8bb43a0da4bd175418c837dca7d308a7d69f9",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/pandoc-converter/scripts/batch_convert.py": {
+      "sha256": "59c778ca41024b53a0c707d2fec0d019e5ab3a15effa009ea09b78328ae6d124",
+      "mode": 493
+    },
+    "dist/claude/devtools/skills/pandoc-converter/scripts/check_dependencies.py": {
+      "sha256": "29ae4f1a950c5e662b7c2c269d3c7cf04badf30887e9b5d52c3478d64ea0048d",
+      "mode": 493
+    },
+    "dist/claude/devtools/skills/playwright-cli/SKILL.md": {
+      "sha256": "66b702764855672abbc0cfbc92883ed223c3f9467a946a74785e1c6701033327",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/playwright-cli/references/request-mocking.md": {
+      "sha256": "54e801c9663fc2b6d68ceb058cb1c360724c2499f42acc7852a68e83e5b5f37c",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/playwright-cli/references/running-code.md": {
+      "sha256": "9707ad5e406db7e06895203fae97e6fb1d72f82fd8e8ece4a0a3754dc64d57ae",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/playwright-cli/references/session-management.md": {
+      "sha256": "b0e37c3600cc35a2b8d2f84397ef090f64c0a0f9d786de4c78db147f574be082",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/playwright-cli/references/storage-state.md": {
+      "sha256": "1122778c9b13b44bddebb4476a7f99d918afd31757be8b4fade3cb09c3d48c99",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/playwright-cli/references/test-generation.md": {
+      "sha256": "f08d14388b7002963e27bd242550154cb1379def89597464deb36b6f7afca15f",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/playwright-cli/references/tracing.md": {
+      "sha256": "792e0ac7705e56ac48df84c0f5400221ce86107897c671590a64a4ea6a82508e",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/playwright-cli/references/video-recording.md": {
+      "sha256": "f5a1309e73b080e900d9e01c019d729c0132c616c0e905bc0af79b479d29242a",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/principle-make-the-change-easy/SKILL.md": {
+      "sha256": "491bc0befd0a39ddd8a0b23265c0f211bd6d9f2e170eaf7b90eb1752c14529f3",
+      "mode": 420
+    },
+    "dist/claude/devtools/skills/tailscale-serve-sidecar/SKILL.md": {
+      "sha256": "239e8c736868cfa69b27bb0bcbabd04fbb6e57b842a726e83bf7fe162e3815b5",
       "mode": 420
     },
     "dist/claude/library-version.json": {
-      "sha256": "c465398f0878448d422fbb0040901b63eae0fdbb5e8b997a46f236399fe27019",
+      "sha256": "d5c6b8f7330459a8d1581c9846d1e06683f7ad448ec9eb089206480253d04409",
       "mode": 420
     },
-    "dist/claude/skills/pandoc-converter/SKILL.md": {
-      "sha256": "5cab469edd2f2dc2d7874e93193f415aadea7f61c981c3ee16d25d00c6634308",
+    "dist/claude/sfdc/.claude-plugin/plugin.json": {
+      "sha256": "7f05d44824f41537f6eab7715ff83e54bc5d4a3853914f95e91cc623a857b717",
       "mode": 420
     },
-    "dist/claude/skills/pandoc-converter/references/conversion_recipes.md": {
-      "sha256": "768308f1c239aa6d966366f35d2e5a934f01d975df4ec68045392794530ac302",
-      "mode": 420
-    },
-    "dist/claude/skills/pandoc-converter/references/filters_and_templates.md": {
-      "sha256": "a0c8c521b80b207fbd11961005c8bb43a0da4bd175418c837dca7d308a7d69f9",
-      "mode": 420
-    },
-    "dist/claude/skills/pandoc-converter/scripts/batch_convert.py": {
-      "sha256": "59c778ca41024b53a0c707d2fec0d019e5ab3a15effa009ea09b78328ae6d124",
-      "mode": 493
-    },
-    "dist/claude/skills/pandoc-converter/scripts/check_dependencies.py": {
-      "sha256": "29ae4f1a950c5e662b7c2c269d3c7cf04badf30887e9b5d52c3478d64ea0048d",
-      "mode": 493
-    },
-    "dist/claude/skills/playwright-cli/SKILL.md": {
-      "sha256": "de0ed65bee92d402d0da3b0c0d58668883c2fc9f3ded9e41cc2cfd97aefb8b85",
-      "mode": 420
-    },
-    "dist/claude/skills/playwright-cli/references/request-mocking.md": {
-      "sha256": "54e801c9663fc2b6d68ceb058cb1c360724c2499f42acc7852a68e83e5b5f37c",
-      "mode": 420
-    },
-    "dist/claude/skills/playwright-cli/references/running-code.md": {
-      "sha256": "9707ad5e406db7e06895203fae97e6fb1d72f82fd8e8ece4a0a3754dc64d57ae",
-      "mode": 420
-    },
-    "dist/claude/skills/playwright-cli/references/session-management.md": {
-      "sha256": "b0e37c3600cc35a2b8d2f84397ef090f64c0a0f9d786de4c78db147f574be082",
-      "mode": 420
-    },
-    "dist/claude/skills/playwright-cli/references/storage-state.md": {
-      "sha256": "1122778c9b13b44bddebb4476a7f99d918afd31757be8b4fade3cb09c3d48c99",
-      "mode": 420
-    },
-    "dist/claude/skills/playwright-cli/references/test-generation.md": {
-      "sha256": "f08d14388b7002963e27bd242550154cb1379def89597464deb36b6f7afca15f",
-      "mode": 420
-    },
-    "dist/claude/skills/playwright-cli/references/tracing.md": {
-      "sha256": "792e0ac7705e56ac48df84c0f5400221ce86107897c671590a64a4ea6a82508e",
-      "mode": 420
-    },
-    "dist/claude/skills/playwright-cli/references/video-recording.md": {
-      "sha256": "f5a1309e73b080e900d9e01c019d729c0132c616c0e905bc0af79b479d29242a",
-      "mode": 420
-    },
-    "dist/claude/skills/principle-make-the-change-easy/SKILL.md": {
-      "sha256": "5dac9d2d0a7fd991bd5ebb998df18424c576e959cf89d7e7d9843a1e16e3f2f2",
-      "mode": 420
-    },
-    "dist/claude/skills/tailscale-serve-sidecar/SKILL.md": {
-      "sha256": "f3dfb189eac08ca5715c497dcd23f0c1192a5ed56a0fbd92014efea20af6d423",
-      "mode": 420
-    },
-    "dist/codex/LICENSE": {
+    "dist/claude/sfdc/LICENSE": {
       "sha256": "e97926590a7381904af79d3713bdf8e8f4f17fc72059094ab37f96b9b4e67db2",
       "mode": 420
     },
-    "dist/codex/agents/devtools-crystal-code-reviewer.toml": {
+    "dist/claude/sfdc/skills/plan/SKILL.md": {
+      "sha256": "c21b26377a42494c199e726e4eb02e6ffb0b58122e6eac6ad36184a4087d6ffe",
+      "mode": 420
+    },
+    "dist/claude/sfdc/skills/principle-make-the-change-easy/SKILL.md": {
+      "sha256": "a41f4387142b6c0ed4d14ff08fef373c9d52dbf5a0eabab18a8aa3b00df64d30",
+      "mode": 420
+    },
+    "dist/claude/sfdc/skills/work/SKILL.md": {
+      "sha256": "56456e0f51c3b902e2836c77c30885813102bf23984a1a661f3a7e42ad5da232",
+      "mode": 420
+    },
+    "dist/claude/statusline/.claude-plugin/plugin.json": {
+      "sha256": "2cd87399d76d94ea4c7dd7fa175ebb9b9a8c0cb80f7b457fa2fca23351592891",
+      "mode": 420
+    },
+    "dist/claude/statusline/LICENSE": {
+      "sha256": "e97926590a7381904af79d3713bdf8e8f4f17fc72059094ab37f96b9b4e67db2",
+      "mode": 420
+    },
+    "dist/claude/statusline/hooks/hooks.json": {
+      "sha256": "d842d789476d67282d0f04b7e5fdc68a3d981ccec65dd79cfa2d11eed13fb828",
+      "mode": 420
+    },
+    "dist/claude/statusline/hooks/ledger.ts": {
+      "sha256": "a265ac81c64289a8089e594fe0d35890fa3b6648ff93fb138eab402e1018d33b",
+      "mode": 420
+    },
+    "dist/claude/statusline/hooks/register.tsx": {
+      "sha256": "f0b096e32ddcc38777ffba01d4ab0e640d9af5bc2022a9bf6390123b3043a324",
+      "mode": 420
+    },
+    "dist/claude/statusline/tsconfig.json": {
+      "sha256": "4087cf0ba92fde503ed0e7c56f37bcb26ad0c085873f10219d0336c0f19b5a8f",
+      "mode": 420
+    },
+    "dist/claude/statusline/types/index.d.ts": {
+      "sha256": "173715f25f2aa9622a0627821ed91a6a0ac08814a2c764236c834f69701055ec",
+      "mode": 420
+    },
+    "dist/codex/devtools/LICENSE": {
+      "sha256": "e97926590a7381904af79d3713bdf8e8f4f17fc72059094ab37f96b9b4e67db2",
+      "mode": 420
+    },
+    "dist/codex/devtools/agents/devtools-crystal-code-reviewer.toml": {
       "sha256": "c562aba79052f60cec5fd3a9b4ef648dcf2d194383dc818859d63b0798623fc2",
       "mode": 420
     },
-    "dist/codex/agents/devtools-crystal-lang-engineer.toml": {
+    "dist/codex/devtools/agents/devtools-crystal-lang-engineer.toml": {
       "sha256": "4493f67fb1ee902a71eca9b98b6010454d7845bf947f6432bf43c2ce2e92f76a",
       "mode": 420
     },
-    "dist/codex/agents/devtools-deno-javascript-expert.toml": {
+    "dist/codex/devtools/agents/devtools-deno-javascript-expert.toml": {
       "sha256": "94f72c57ba81dbd709216a55248771c32511dd46b291822d424f13f57d7a33fd",
       "mode": 420
     },
-    "dist/codex/agents/devtools-dev-ops-engineer.toml": {
+    "dist/codex/devtools/agents/devtools-dev-ops-engineer.toml": {
       "sha256": "21963437c6f595cf61d9910952e852cc48ec943a18d7063a4d1e81e498bbcfe0",
       "mode": 420
     },
-    "dist/codex/agents/devtools-diagram-expert.toml": {
+    "dist/codex/devtools/agents/devtools-diagram-expert.toml": {
       "sha256": "304983ed536796d0a62e4614d6c5dcd88b70aab9df1431d46256f9648597f678",
       "mode": 420
     },
-    "dist/codex/agents/devtools-js-software-engineer.toml": {
+    "dist/codex/devtools/agents/devtools-js-software-engineer.toml": {
       "sha256": "43688d4a56ff9c4b4f9b88a0c4d452068f36780dc3f97eda74d518686af2d11b",
       "mode": 420
     },
-    "dist/codex/agents/devtools-laravel-php-expert.toml": {
+    "dist/codex/devtools/agents/devtools-laravel-php-expert.toml": {
       "sha256": "6c554e32f1709867206b968ee869a7cac66fa8570eb2ec2d1a108fb444df1a41",
       "mode": 420
     },
-    "dist/codex/agents/devtools-salesforce-apex-test-engineer.toml": {
+    "dist/codex/devtools/agents/devtools-salesforce-apex-test-engineer.toml": {
       "sha256": "9e87abe2e8e08f0c8d2e8643627d88d40e9b522be1ca5244ab5e896d907957ca",
       "mode": 420
     },
-    "dist/codex/agents/devtools-salesforce-platform-expert.toml": {
+    "dist/codex/devtools/agents/devtools-salesforce-platform-expert.toml": {
       "sha256": "2ef9529e1e8a510e475917eab8fd1d4813a0924d86ad0c7f004b186d13d504fa",
       "mode": 420
     },
-    "dist/codex/agents/devtools-uat-specialist.toml": {
+    "dist/codex/devtools/agents/devtools-uat-specialist.toml": {
       "sha256": "0a0bb00b31f67b366daf052b93226cd3cf159b758be0a7f2f680230f1ce564a2",
       "mode": 420
     },
-    "dist/codex/library-version.json": {
-      "sha256": "8f24b2d69b34eb6dab8b8b304ca88494e9b9e753fa953f07ab0ff417613a5751",
-      "mode": 420
-    },
-    "dist/codex/plugin.json": {
+    "dist/codex/devtools/plugin.json": {
       "sha256": "5d4b2b5f3f4ee0ea2bfe8585986a5f52fe3263378c332e579ce489914d2a5169",
       "mode": 420
     },
-    "dist/codex/skills/devtools-crystal-code-reviewer/SKILL.md": {
-      "sha256": "a846f570c03151e5192795f8dbcadc3300e1eb66372b9e19483d68f1bb41d338",
+    "dist/codex/devtools/skills/devtools-crystal-code-reviewer/SKILL.md": {
+      "sha256": "c8866b3f5edfe5a551695826f9156ba8585e8d797e5cfe6ee6e0c2349bceab02",
       "mode": 420
     },
-    "dist/codex/skills/devtools-crystal-code-reviewer/references/prompt.md": {
-      "sha256": "d3fc459de95999a9b8696fa6932e007c488af4d760403541bec7f9c43d655409",
+    "dist/codex/devtools/skills/devtools-crystal-code-reviewer/references/prompt.md": {
+      "sha256": "86d5a7e4a0351a110629165eea1643f4afd9652044bc96191a89ab50d7f8510e",
       "mode": 420
     },
-    "dist/codex/skills/devtools-crystal-lang-engineer/SKILL.md": {
-      "sha256": "128992fd3e36bf98a0169d0ae247816fea732534dcec01fba9d3f6c6ea3611b7",
+    "dist/codex/devtools/skills/devtools-crystal-lang-engineer/SKILL.md": {
+      "sha256": "3ff9507fde4bad39840972156dbf261b1b59c728a7ac1a2293e1192e25ae58d3",
       "mode": 420
     },
-    "dist/codex/skills/devtools-crystal-lang-engineer/references/prompt.md": {
-      "sha256": "52a83d3e2804ce6c02e1beb7c1050b505a628383571112256af37010564b15cb",
+    "dist/codex/devtools/skills/devtools-crystal-lang-engineer/references/prompt.md": {
+      "sha256": "4b85f1dc079a40ffc58f954b1ac2054f9d03479ed019ae950740b8a74bd18437",
       "mode": 420
     },
-    "dist/codex/skills/devtools-deno-javascript-expert/SKILL.md": {
-      "sha256": "8e9d6d5c7e4933d49764df824981dba5399a3addffbe3bf5d05cb0d0c1034478",
+    "dist/codex/devtools/skills/devtools-deno-javascript-expert/SKILL.md": {
+      "sha256": "751863e2abe0779f61df02fdea034b0758fc2883002c9b6eb2c6cdffd14b4255",
       "mode": 420
     },
-    "dist/codex/skills/devtools-deno-javascript-expert/references/prompt.md": {
-      "sha256": "f76428a0f1d69136f8979e75968e2b6d248967f589d6bce308efe539111b4d48",
+    "dist/codex/devtools/skills/devtools-deno-javascript-expert/references/prompt.md": {
+      "sha256": "76524e6c4bac7c98f4afac059423b129a9bb3bef2509dc458f0c1913815cfd0f",
       "mode": 420
     },
-    "dist/codex/skills/devtools-dev-ops-engineer/SKILL.md": {
-      "sha256": "7dbdaed413aa3fa684e83f061edb5fec417701656ae0500f14ae34f15e7e712c",
+    "dist/codex/devtools/skills/devtools-dev-ops-engineer/SKILL.md": {
+      "sha256": "6d03a81402f548dc31ae3d54ded79c0328e72e954ed7ae143faea9d869030962",
       "mode": 420
     },
-    "dist/codex/skills/devtools-dev-ops-engineer/references/prompt.md": {
-      "sha256": "235a5be11e46993e39a023b4a9f52c7eaf64a27a93ba255d8e080a5583478d93",
+    "dist/codex/devtools/skills/devtools-dev-ops-engineer/references/prompt.md": {
+      "sha256": "133b4e20a34403f6516400d0e98766760c9bbe2acb30eac39748214c5b315757",
       "mode": 420
     },
-    "dist/codex/skills/devtools-diagram-expert/SKILL.md": {
-      "sha256": "ff1dea7f8bb3ee025d75e1e9331ce28f46b2f798f42b06ab63ec5b0f23566181",
+    "dist/codex/devtools/skills/devtools-diagram-expert/SKILL.md": {
+      "sha256": "b2d474b9c36c91c5d84cf791f103ad092d0f7dae5f15a9fa2163a50dcb7c768a",
       "mode": 420
     },
-    "dist/codex/skills/devtools-diagram-expert/references/prompt.md": {
-      "sha256": "ea06e4ca2c6c14d0e8159deb77076683b674e5dfe64f179dfc873e3933a16019",
+    "dist/codex/devtools/skills/devtools-diagram-expert/references/prompt.md": {
+      "sha256": "e627b2d7999419f3a9b524d4a207ffb408488d914ebc0aaf5b145b1de3f153ed",
       "mode": 420
     },
-    "dist/codex/skills/devtools-js-software-engineer/SKILL.md": {
-      "sha256": "dd0d06af1b63781b81ac9d968b80269274e061efde4910578255bff041dd447a",
+    "dist/codex/devtools/skills/devtools-js-software-engineer/SKILL.md": {
+      "sha256": "42c85797b8a40d9171e2b74ec46b839f20d823ce494142d2f9dd97300540870e",
       "mode": 420
     },
-    "dist/codex/skills/devtools-js-software-engineer/references/prompt.md": {
-      "sha256": "3ce7c8cdd85338f8cfe1eb33fc059aff1c8a08f7591ff56ed22e7625e09a774c",
+    "dist/codex/devtools/skills/devtools-js-software-engineer/references/prompt.md": {
+      "sha256": "ccb1f11022395118c047636775634c989906e59496333bb80cc94b1ecf2e2237",
       "mode": 420
     },
-    "dist/codex/skills/devtools-laravel-php-expert/SKILL.md": {
-      "sha256": "c9646d71d41546bc90dddb6d401d2ade91e7770a742d913a3f44ca48f03acac2",
+    "dist/codex/devtools/skills/devtools-laravel-php-expert/SKILL.md": {
+      "sha256": "3a44017318e8a996210fbe55a91616c07c5956849784ada4d7c7b92df7d87536",
       "mode": 420
     },
-    "dist/codex/skills/devtools-laravel-php-expert/references/prompt.md": {
-      "sha256": "8c02d9c3c1b5d15216726cee26ac178ca6291d44d43d3ce53694df82c83bcde3",
+    "dist/codex/devtools/skills/devtools-laravel-php-expert/references/prompt.md": {
+      "sha256": "a71a1c134f0c322599d50a70cf812728a396d1d8c1d3d9165d91d12cab88c112",
       "mode": 420
     },
-    "dist/codex/skills/devtools-plan/SKILL.md": {
-      "sha256": "6abae6312ee1384a8c8c131191186bfb79a80d9ef1e910b5084c666307c77aee",
+    "dist/codex/devtools/skills/devtools-plan/SKILL.md": {
+      "sha256": "7e51ace15d4999b27000d73c44a65c4dc6fe5520caf897ddf3d66f164400954a",
       "mode": 420
     },
-    "dist/codex/skills/devtools-plan/agents/openai.yaml": {
+    "dist/codex/devtools/skills/devtools-plan/agents/openai.yaml": {
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "mode": 420
     },
-    "dist/codex/skills/devtools-reflection/SKILL.md": {
-      "sha256": "3af02ae30e1bdc7dde054e7d33d53bc8447c7773927cdf43c86a87e959f2f4f3",
+    "dist/codex/devtools/skills/devtools-reflection/SKILL.md": {
+      "sha256": "c9fafca168db4712efb0779ae29a18e5348a217647b177c4e0638eb329a41855",
       "mode": 420
     },
-    "dist/codex/skills/devtools-reflection/agents/openai.yaml": {
+    "dist/codex/devtools/skills/devtools-reflection/agents/openai.yaml": {
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "mode": 420
     },
-    "dist/codex/skills/devtools-salesforce-apex-test-engineer/SKILL.md": {
-      "sha256": "9261ed6aa88ddfbcd1d65beedddceef493b6b8036c2f42974222c4d20d049be8",
+    "dist/codex/devtools/skills/devtools-salesforce-apex-test-engineer/SKILL.md": {
+      "sha256": "4782fbe9e5a159270c5d28b5c40d5a576c8c07f3853af6b4e77210c9851d993d",
       "mode": 420
     },
-    "dist/codex/skills/devtools-salesforce-apex-test-engineer/references/prompt.md": {
-      "sha256": "4238f48bb5bec457d5b6c2f364dd25602882b0949852051499651d219116d102",
+    "dist/codex/devtools/skills/devtools-salesforce-apex-test-engineer/references/prompt.md": {
+      "sha256": "cf920a13ea3392774c05aad0902d0a76a7a0b31cf888a9c63b408d85b11eb3d2",
       "mode": 420
     },
-    "dist/codex/skills/devtools-salesforce-platform-expert/SKILL.md": {
-      "sha256": "8c1b1f4e3d26ab6ec8cd419959a19d415c2ce24fe9dbf5155ea7c9438c31aaa8",
+    "dist/codex/devtools/skills/devtools-salesforce-platform-expert/SKILL.md": {
+      "sha256": "1345230742aa0c50f8893a235d26da36fbce05a585c0e82fcda2e017871d2121",
       "mode": 420
     },
-    "dist/codex/skills/devtools-salesforce-platform-expert/references/prompt.md": {
-      "sha256": "ba67c8eac1fa93d426a49f79c533cb88713ddd9a72bf713e44de09ddd916a817",
+    "dist/codex/devtools/skills/devtools-salesforce-platform-expert/references/prompt.md": {
+      "sha256": "b002c0a1d2aaae67e763376eac2a112005ce67e38c30885b154b9bf2a0bdb9ed",
       "mode": 420
     },
-    "dist/codex/skills/devtools-uat-specialist/SKILL.md": {
-      "sha256": "dfe5a12c8552045495ebb4932ce7368c5f7ef4282c15f2a8101cdf4eb043b7d3",
+    "dist/codex/devtools/skills/devtools-uat-specialist/SKILL.md": {
+      "sha256": "43a3e2535a4b21da911e8195527682459d10b7e11b450a6f7e438d484b0992f6",
       "mode": 420
     },
-    "dist/codex/skills/devtools-uat-specialist/references/prompt.md": {
-      "sha256": "3cf74496a8954ce27337ce2a8569cc64326ade7dd7230a8ceab2f3c5d821e48c",
+    "dist/codex/devtools/skills/devtools-uat-specialist/references/prompt.md": {
+      "sha256": "5ce47de0c527873156711cab8949dea606ee052dde61fa8f7a7f8d045201d198",
       "mode": 420
     },
-    "dist/codex/skills/devtools-work/SKILL.md": {
-      "sha256": "3e2406464fdc238c0bd6abf00066e91a9e7719d1d2a23240a56a734962b4618f",
+    "dist/codex/devtools/skills/devtools-work/SKILL.md": {
+      "sha256": "0133996860f3dee68c23359a1064b546fc022111f33851c8e63d7358e48448c5",
       "mode": 420
     },
-    "dist/codex/skills/devtools-work/agents/openai.yaml": {
+    "dist/codex/devtools/skills/devtools-work/agents/openai.yaml": {
       "sha256": "a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94",
       "mode": 420
     },
-    "dist/codex/skills/pandoc-converter/SKILL.md": {
-      "sha256": "5cab469edd2f2dc2d7874e93193f415aadea7f61c981c3ee16d25d00c6634308",
+    "dist/codex/devtools/skills/pandoc-converter/SKILL.md": {
+      "sha256": "947034d350388b2084a281bf978c68bbb06e95ef938db5eae6296bd45540fd7c",
       "mode": 420
     },
-    "dist/codex/skills/pandoc-converter/references/conversion_recipes.md": {
+    "dist/codex/devtools/skills/pandoc-converter/references/conversion_recipes.md": {
       "sha256": "768308f1c239aa6d966366f35d2e5a934f01d975df4ec68045392794530ac302",
       "mode": 420
     },
-    "dist/codex/skills/pandoc-converter/references/filters_and_templates.md": {
+    "dist/codex/devtools/skills/pandoc-converter/references/filters_and_templates.md": {
       "sha256": "a0c8c521b80b207fbd11961005c8bb43a0da4bd175418c837dca7d308a7d69f9",
       "mode": 420
     },
-    "dist/codex/skills/pandoc-converter/scripts/batch_convert.py": {
+    "dist/codex/devtools/skills/pandoc-converter/scripts/batch_convert.py": {
       "sha256": "59c778ca41024b53a0c707d2fec0d019e5ab3a15effa009ea09b78328ae6d124",
       "mode": 493
     },
-    "dist/codex/skills/pandoc-converter/scripts/check_dependencies.py": {
+    "dist/codex/devtools/skills/pandoc-converter/scripts/check_dependencies.py": {
       "sha256": "29ae4f1a950c5e662b7c2c269d3c7cf04badf30887e9b5d52c3478d64ea0048d",
       "mode": 493
     },
-    "dist/codex/skills/playwright-cli/SKILL.md": {
-      "sha256": "ddd0cbd36f912ddc36baa4008edd954a9bac90405e460593583aa84e88afb76d",
+    "dist/codex/devtools/skills/playwright-cli/SKILL.md": {
+      "sha256": "df1118fd54a37442f959de03cceaf02d7484f2b35f9b56e33a9bee032dc676ee",
       "mode": 420
     },
-    "dist/codex/skills/playwright-cli/references/request-mocking.md": {
+    "dist/codex/devtools/skills/playwright-cli/references/request-mocking.md": {
       "sha256": "54e801c9663fc2b6d68ceb058cb1c360724c2499f42acc7852a68e83e5b5f37c",
       "mode": 420
     },
-    "dist/codex/skills/playwright-cli/references/running-code.md": {
+    "dist/codex/devtools/skills/playwright-cli/references/running-code.md": {
       "sha256": "9707ad5e406db7e06895203fae97e6fb1d72f82fd8e8ece4a0a3754dc64d57ae",
       "mode": 420
     },
-    "dist/codex/skills/playwright-cli/references/session-management.md": {
+    "dist/codex/devtools/skills/playwright-cli/references/session-management.md": {
       "sha256": "b0e37c3600cc35a2b8d2f84397ef090f64c0a0f9d786de4c78db147f574be082",
       "mode": 420
     },
-    "dist/codex/skills/playwright-cli/references/storage-state.md": {
+    "dist/codex/devtools/skills/playwright-cli/references/storage-state.md": {
       "sha256": "1122778c9b13b44bddebb4476a7f99d918afd31757be8b4fade3cb09c3d48c99",
       "mode": 420
     },
-    "dist/codex/skills/playwright-cli/references/test-generation.md": {
+    "dist/codex/devtools/skills/playwright-cli/references/test-generation.md": {
       "sha256": "f08d14388b7002963e27bd242550154cb1379def89597464deb36b6f7afca15f",
       "mode": 420
     },
-    "dist/codex/skills/playwright-cli/references/tracing.md": {
+    "dist/codex/devtools/skills/playwright-cli/references/tracing.md": {
       "sha256": "792e0ac7705e56ac48df84c0f5400221ce86107897c671590a64a4ea6a82508e",
       "mode": 420
     },
-    "dist/codex/skills/playwright-cli/references/video-recording.md": {
+    "dist/codex/devtools/skills/playwright-cli/references/video-recording.md": {
       "sha256": "f5a1309e73b080e900d9e01c019d729c0132c616c0e905bc0af79b479d29242a",
       "mode": 420
     },
-    "dist/codex/skills/principle-make-the-change-easy/SKILL.md": {
-      "sha256": "5dac9d2d0a7fd991bd5ebb998df18424c576e959cf89d7e7d9843a1e16e3f2f2",
+    "dist/codex/devtools/skills/principle-make-the-change-easy/SKILL.md": {
+      "sha256": "491bc0befd0a39ddd8a0b23265c0f211bd6d9f2e170eaf7b90eb1752c14529f3",
       "mode": 420
     },
-    "dist/codex/skills/tailscale-serve-sidecar/SKILL.md": {
-      "sha256": "f3dfb189eac08ca5715c497dcd23f0c1192a5ed56a0fbd92014efea20af6d423",
+    "dist/codex/devtools/skills/tailscale-serve-sidecar/SKILL.md": {
+      "sha256": "239e8c736868cfa69b27bb0bcbabd04fbb6e57b842a726e83bf7fe162e3815b5",
+      "mode": 420
+    },
+    "dist/codex/library-version.json": {
+      "sha256": "608fe50c7f4415da29becb2a04730b12d6bef954dd97e039e0681c74c986974c",
+      "mode": 420
+    },
+    "dist/codex/sfdc/LICENSE": {
+      "sha256": "e97926590a7381904af79d3713bdf8e8f4f17fc72059094ab37f96b9b4e67db2",
+      "mode": 420
+    },
+    "dist/codex/sfdc/plugin.json": {
+      "sha256": "d665f6fb26b054f51c1459d29560e1b91d04567824c538c8e4e6edf403dc7b05",
+      "mode": 420
+    },
+    "dist/codex/sfdc/skills/sfdc-plan/SKILL.md": {
+      "sha256": "ed73c7915a129359b13c98d73547259196cd1a5f41dc718fc64819fc28703cb3",
+      "mode": 420
+    },
+    "dist/codex/sfdc/skills/sfdc-principle-make-the-change-easy/SKILL.md": {
+      "sha256": "e19f8d0339ace615c060767d741fffe99a7ccfd1ea7dc3bc44ddf7ce561d2a16",
+      "mode": 420
+    },
+    "dist/codex/sfdc/skills/sfdc-work/SKILL.md": {
+      "sha256": "a16485d17ec8a23f84b640a592cfb9bf4409a2799791af2f4cf71c9b8a408d4d",
       "mode": 420
     },
     "dist/pi/LICENSE": {
@@ -389,43 +434,43 @@
       "mode": 420
     },
     "dist/pi/agents/devtools-crystal-code-reviewer.md": {
-      "sha256": "ba100f9002b900526747516f87121abdec3ab7e49441208592f3008596241d8e",
+      "sha256": "82330ad3b2629162e7d91e46ed8f7c53792552ac4fef189ed8ce0de3801d114d",
       "mode": 420
     },
     "dist/pi/agents/devtools-crystal-lang-engineer.md": {
-      "sha256": "35a0253733431c504ab254656cf923b5468f28bb2ca28066dbf1af68a197d929",
+      "sha256": "02cc7ba310b30cdd88a11a92aa7af0941e63f5e66e9a5bcfac1b3e67a9d44d27",
       "mode": 420
     },
     "dist/pi/agents/devtools-deno-javascript-expert.md": {
-      "sha256": "09a9cab27bfe917ab791200cf2ec4e07b0ddd5c86e38aa1cf894036dbab52c1b",
+      "sha256": "4e5eec15d02c491bac2c70215143d953bec360f9debc35f030c334b18aebc69a",
       "mode": 420
     },
     "dist/pi/agents/devtools-dev-ops-engineer.md": {
-      "sha256": "53661ef3ba700dce680d783151a2d7a4f477d2ec40a72967596aae553b8786bc",
+      "sha256": "eb4cd5b3b5bb6fc566b8af85552a5f1166db92a8f6f7c1e21b432b48f421b9d1",
       "mode": 420
     },
     "dist/pi/agents/devtools-diagram-expert.md": {
-      "sha256": "678d76e74c157db54c028a9c7ef62d3178bb59013930ebe3530f09415ab3d007",
+      "sha256": "81f09ddd84b21ba003e45194ee1617ce3b26845456a9b0e0e2c812f7568f47dd",
       "mode": 420
     },
     "dist/pi/agents/devtools-js-software-engineer.md": {
-      "sha256": "e1be7617ee325f8c8e9c532e5112a3e75d47ca2b9eb48fc5c859b7f5b8155489",
+      "sha256": "879fc6fbbd45730685a185c4bbf655c71e2bac8609a0decb726a3a1490645742",
       "mode": 420
     },
     "dist/pi/agents/devtools-laravel-php-expert.md": {
-      "sha256": "93c4e5afdb4ab18340e91590a718821adaa9fef6f23bae59e696a656a9fd52eb",
+      "sha256": "d28baeb90e4752329df0c7056d1b24015ca15b3ea1a94c6398ae2b6c98b956f0",
       "mode": 420
     },
     "dist/pi/agents/devtools-salesforce-apex-test-engineer.md": {
-      "sha256": "2041001cdca9b638c0d4038581d681a636634387491915086fb576fbc75869f8",
+      "sha256": "6eabf5ddae5e7f26a385af8154a26f30abbb927eca51ff555393677abbc39dfd",
       "mode": 420
     },
     "dist/pi/agents/devtools-salesforce-platform-expert.md": {
-      "sha256": "0e2ee09b1ada00ad28da2cc2519e9f38e196d7a416b0c159410be06f2c36dd97",
+      "sha256": "a5944caefdc87e1efdf42c4436ced2b5dc106290357c1113362606886ee5995b",
       "mode": 420
     },
     "dist/pi/agents/devtools-uat-specialist.md": {
-      "sha256": "5ba6c0b30727a2c172f68818d60b6cbfc2659a37b068f89d37eb0485e7d13d18",
+      "sha256": "0081ff73977dc02db652c6c49cb12a218c5a8f06462288672fc6f651408624e2",
       "mode": 420
     },
     "dist/pi/extensions/model-router/index.mjs": {
@@ -437,7 +482,7 @@
       "mode": 420
     },
     "dist/pi/library-version.json": {
-      "sha256": "eef4fcbc8df6fca479a9112f48737c16e8a84c8cd2c5b798076b0877be928f6d",
+      "sha256": "1061690d70a5ff13b6d14b2a1dce6c9cd6b99b22a03449e104cbe0faa77e5485",
       "mode": 420
     },
     "dist/pi/package.json": {
@@ -445,19 +490,19 @@
       "mode": 420
     },
     "dist/pi/prompts/devtools-plan.md": {
-      "sha256": "ecc5e3cb5f9014864ddb1c66f926fcabc888df34ecbc0f13b6f03345986d2d96",
+      "sha256": "6c349e2d1b8473bc10237a11b05e2672e5b782ccdfc028bb25f38a6c67b0e31c",
       "mode": 420
     },
     "dist/pi/prompts/devtools-reflection.md": {
-      "sha256": "b8bafbbf9026ec050533a02bb699c75a86a7aac029dee23491c04e9e62bfa349",
+      "sha256": "a2802caef7295c16f72bc13ec736b460930c9340882d67abc53b2ce9e258b5a6",
       "mode": 420
     },
     "dist/pi/prompts/devtools-work.md": {
-      "sha256": "054829bc160dafc80b589fac48759691e3b071483db469b4ef20ca7c69e9114e",
+      "sha256": "11840e93d89773a25a3e800c2bfbc95e8986be32b1b5f08e9182390dbb271d82",
       "mode": 420
     },
     "dist/pi/skills/pandoc-converter/SKILL.md": {
-      "sha256": "5cab469edd2f2dc2d7874e93193f415aadea7f61c981c3ee16d25d00c6634308",
+      "sha256": "947034d350388b2084a281bf978c68bbb06e95ef938db5eae6296bd45540fd7c",
       "mode": 420
     },
     "dist/pi/skills/pandoc-converter/references/conversion_recipes.md": {
@@ -477,7 +522,7 @@
       "mode": 493
     },
     "dist/pi/skills/playwright-cli/SKILL.md": {
-      "sha256": "ddd0cbd36f912ddc36baa4008edd954a9bac90405e460593583aa84e88afb76d",
+      "sha256": "df1118fd54a37442f959de03cceaf02d7484f2b35f9b56e33a9bee032dc676ee",
       "mode": 420
     },
     "dist/pi/skills/playwright-cli/references/request-mocking.md": {
@@ -509,11 +554,23 @@
       "mode": 420
     },
     "dist/pi/skills/principle-make-the-change-easy/SKILL.md": {
-      "sha256": "5dac9d2d0a7fd991bd5ebb998df18424c576e959cf89d7e7d9843a1e16e3f2f2",
+      "sha256": "491bc0befd0a39ddd8a0b23265c0f211bd6d9f2e170eaf7b90eb1752c14529f3",
+      "mode": 420
+    },
+    "dist/pi/skills/sfdc-plan/SKILL.md": {
+      "sha256": "1f19c4578c371f71caea075c25858f8d2d5f1853190cb717d48e057790e37547",
+      "mode": 420
+    },
+    "dist/pi/skills/sfdc-principle-make-the-change-easy/SKILL.md": {
+      "sha256": "e19f8d0339ace615c060767d741fffe99a7ccfd1ea7dc3bc44ddf7ce561d2a16",
+      "mode": 420
+    },
+    "dist/pi/skills/sfdc-work/SKILL.md": {
+      "sha256": "d4ead2b30f82a87d34ecbb9e2cbeaa21d3dc84dd1b426afdd82b8c0538a8e5ae",
       "mode": 420
     },
     "dist/pi/skills/tailscale-serve-sidecar/SKILL.md": {
-      "sha256": "f3dfb189eac08ca5715c497dcd23f0c1192a5ed56a0fbd92014efea20af6d423",
+      "sha256": "239e8c736868cfa69b27bb0bcbabd04fbb6e57b842a726e83bf7fe162e3815b5",
       "mode": 420
     }
   }

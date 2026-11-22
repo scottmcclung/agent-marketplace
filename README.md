@@ -8,11 +8,18 @@ native tooling. There is no custom machine-sync daemon or installer.
 ## Layout
 
 ```text
-library/                       # EDIT: shared prompt documents and skill assets
-  agents/*.md.hbs
-  commands/*.md.hbs
-  skills/<name>/SKILL.md.hbs
-  skills/<name>/evals/         # skill test suite; not packaged
+library/plugins/               # EDIT: self-contained plugin sources
+  devtools/
+    plugin.json                # declares local agents, commands, and skills
+    agents/*.md.hbs
+    commands/*.md.hbs
+    skills/<name>/SKILL.md.hbs
+    skills/<name>/evals/        # skill test suite; not packaged
+  sfdc/
+    plugin.json                # agents: [], commands: [], local skills only
+    skills/plan/SKILL.md.hbs
+    skills/work/SKILL.md.hbs
+    skills/principle-make-the-change-easy/SKILL.md.hbs
 clients/                       # EDIT: host value maps and output templates
   claude/{config.json,templates/}
   codex/{config.json,templates/}
@@ -22,15 +29,32 @@ scripts/                       # Node.js build / validation tooling
 .claude-plugin/marketplace.json # GENERATED: Claude catalog
 .agents/plugins/marketplace.json# GENERATED: Codex catalog
 dist/                          # GENERATED and committed for native Git installs
-  claude/                      # devtools plugin: native agents + commands + skills
-  codex/                       # devtools plugin: delegation/workflow skills
+  claude/
+    devtools/                  # native agents + commands + skills
+    sfdc/                      # Salesforce workflow skills
+    statusline/                # Claude statusline feature plugin
+    library-version.json       # host version stamp
+  codex/
+    devtools/                  # delegation/workflow skills
+    sfdc/                      # Salesforce workflow skills
+    library-version.json       # host version stamp
   pi/                          # Pi package: router + agents + prompts + skills
+                               #   (including prefixed plugin skills such as sfdc-plan)
   manifest.json                # version, input fingerprint, file checksums
 ```
 
+Each plugin owns all of its declared files locally. Both plugins contain an independent physical
+copy of `principle-make-the-change-easy`; neither reuses the other's source.
+Every `plugin.json` has `name`, `description`, `agents`, `commands`, and `skills`.
+The three lists contain local canonical names and are empty when that kind is
+absent. `features/` remains separate for harness-specific features. Claude and
+Codex catalogs point to the nested plugin roots under `dist/claude/` and
+`dist/codex/`. Native entry points are unchanged; Pi remains at `dist/pi/`.
+
 `package.json` is the authoritative library version. All three distributions
 carry that version and the same deterministic input fingerprint in
-`library-version.json`. A Git-backed Pi install uses the **root** `pi` manifest;
+`dist/<client>/library-version.json`, outside the Claude/Codex plugin roots.
+A Git-backed Pi install uses the **root** `pi` manifest;
 `dist/pi/package.json` is also a standalone package for optional npm publishing.
 
 ## Build and verify
@@ -71,6 +95,15 @@ claude plugin install devtools@agent-marketplace
 Start a new session. Invoke `/devtools:work`, `/devtools:plan`, or
 `/devtools:reflection`. Claude receives native plugin agents.
 
+The Salesforce workflows are a separate plugin from the same catalog. Install
+`devtools` too, because they delegate to its specialists:
+
+```bash
+claude plugin install sfdc@agent-marketplace
+```
+
+Invoke `/sfdc:plan` or `/sfdc:work`.
+
 ### Pi
 
 Install the assumed subagent implementation explicitly, then this package:
@@ -83,7 +116,10 @@ pi install "$PWD"
 Restart Pi. `/agents` should show package agents such as
 `devtools-js-software-engineer`. Invoke `/devtools-work`, `/devtools-plan`, or
 `/devtools-reflection`; skills are also available as `/skill:playwright-cli`,
-etc. Package agents require a version of `@tintinweb/pi-subagents` supporting
+etc. The Salesforce workflows ship in the same package as prefixed skills:
+`/skill:sfdc-plan` and `/skill:sfdc-work`. Installing this package once
+provides both those skills and the devtools specialists they delegate to.
+Package agents require a version of `@tintinweb/pi-subagents` supporting
 `pi.subagents.agents`; the extension and its package-agent discovery must be
 enabled. Installing it as a transitive npm dependency is **not** sufficient.
 
@@ -104,6 +140,15 @@ codex plugin add devtools@agent-marketplace
 Start a new session. Invoke `$devtools-work`, `$devtools-plan`, or
 `$devtools-reflection`. Browse installed plugins with `/plugins`.
 
+The Salesforce workflows are a separate plugin. Keep `devtools` installed,
+because they delegate to its specialist skills:
+
+```bash
+codex plugin add sfdc@agent-marketplace
+```
+
+Invoke `$sfdc-plan` or `$sfdc-work`.
+
 **Codex compatibility:** native plugins deliver the specialist prompts as
 **delegation skills**, not automatically registered custom agent types. Each
 specialist skill instructs the parent to send its role prompt to a fresh generic
@@ -111,8 +156,8 @@ child. Delegation must be available. Workflow instructions explicitly prohibit
 pretending a skill identifier is a registered `agent_type` or silently doing
 the work in the parent.
 
-`dist/codex/agents/*.toml` are optional native-agent **exports**. Merely bundling
-them in a plugin does not register them; manual placement under a supported
+`dist/codex/devtools/agents/*.toml` are optional native-agent **exports**.
+Merely bundling them in a plugin does not register them; manual placement under a supported
 `~/.codex/agents/` is an advanced option and is not updated by plugin management.
 The native-install path does not depend on those exports. See
 [compatibility and limitations](docs/architecture.md#compatibility-contract).
@@ -127,10 +172,12 @@ once the generated distributions have been committed and pushed there.
 # Claude Code
 claude plugin marketplace add https://github.com/scottmcclung/agent-marketplace.git
 claude plugin install devtools@agent-marketplace
+claude plugin install sfdc@agent-marketplace   # optional; requires devtools
 
 # Codex
 codex plugin marketplace add scottmcclung/agent-marketplace
 codex plugin add devtools@agent-marketplace
+codex plugin add sfdc@agent-marketplace        # optional; requires devtools
 
 # Pi (install @tintinweb/pi-subagents separately as above)
 pi install git:github.com/scottmcclung/agent-marketplace
@@ -142,6 +189,7 @@ pi install git:github.com/scottmcclung/agent-marketplace
 # Refresh Claude's marketplace catalog and installed plugin
 claude plugin marketplace update agent-marketplace
 claude plugin update devtools@agent-marketplace
+claude plugin update sfdc@agent-marketplace
 
 # Refresh Codex's tracked marketplace and configured plugins
 codex plugin marketplace upgrade agent-marketplace
@@ -173,9 +221,19 @@ Commands: `work`, `plan`, `reflection`.
 Skills: `playwright-cli`, `pandoc-converter`, `tailscale-serve-sidecar`,
 `principle-make-the-change-easy`.
 
+Plugin `sfdc`: Salesforce `plan` and `work` skills, plus its own copy of
+`principle-make-the-change-easy`. Claude names them `/sfdc:plan`; Codex
+`$sfdc-plan`; Pi `/skill:sfdc-plan`. The plugin has no agents of its own. It
+delegates to the devtools `salesforce-platform-expert`,
+`salesforce-apex-test-engineer`, `dev-ops-engineer`, and `uat-specialist`.
+On Claude and Codex, install `devtools` alongside `sfdc`. If a specialist is
+missing, the workflows stop and name it instead of doing its work in the parent.
+
 ## Runtime prerequisites and safety
 
 - Work/plan workflows expect the **`bd` CLI** and a configured beads project.
+- The sfdc workflows also expect the Salesforce **`sf` CLI** and explicitly
+  named, authorized non-production orgs before any deploy.
   The Claude beads plugin is not automatically installed in other clients.
 - Browser UAT requires `@playwright/cli` and an installed browser.
 - Pandoc conversion requires Pandoc; PDF conversion may require a PDF engine.

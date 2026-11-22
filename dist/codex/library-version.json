@@ -2,6 +2,6 @@
   "library": "agent-marketplace",
   "version": "0.3.0",
   "client": "codex",
-  "inputsDigest": "c6adc2a5190087138e4ed34ad9a3b7b4f6f4b6b3e81247f0c3c3e8337c411c84",
+  "inputsDigest": "a86f0ebdfaa2044d7852f0ac829cd4f30405b25d2b7d21c4f54246b694fe2572",
   "agentMode": "delegation-skills"
 }

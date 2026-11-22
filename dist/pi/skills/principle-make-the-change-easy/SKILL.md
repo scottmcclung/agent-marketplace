@@ -2,7 +2,7 @@
 name: principle-make-the-change-easy
 description: "Use before changing the logic of existing code: adding a feature or option, fixing a bug, refactoring, or cleaning up. This includes requests that sound routine, because new behavior has to fit into structure that already exists. Check it before exploring the files. When debugging, use it once the cause is found and before writing the fix. Not for edits that only change a literal value, message text, version number, or config setting, and not for code written from scratch, explaining code, reviews, audits, or adding tests only. Separates structure changes from behavior changes and decides which tidyings to do first, after, or later."
 ---
-<!-- Generated from library/skills/principle-make-the-change-easy/SKILL.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/skills/principle-make-the-change-easy/SKILL.md.hbs; edit library/ and clients/, not this file. -->
 
 # Make the change easy, then make the easy change
 

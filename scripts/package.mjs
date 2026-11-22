@@ -18,7 +18,13 @@ try {
   await fs.rm(artifacts, { recursive: true, force: true });
   await fs.mkdir(artifacts);
   for (const client of ['claude', 'codex']) {
-    execFileSync('tar', ['-czf', path.join(artifacts, `${pkg.name}-${client}-${pkg.version}.tar.gz`), '-C', path.join(root, 'dist', client), '.'], { stdio: 'inherit' });
+    const catalogPath = client === 'claude' ? '.claude-plugin/marketplace.json' : '.agents/plugins/marketplace.json';
+    const catalog = JSON.parse(await fs.readFile(path.join(root, catalogPath), 'utf8'));
+    for (const plugin of catalog.plugins) {
+      const source = client === 'claude' ? plugin.source : plugin.source.path;
+      const name = plugin.name === 'devtools' ? pkg.name : `${pkg.name}-${plugin.name}`;
+      execFileSync('tar', ['-czf', path.join(artifacts, `${name}-${client}-${pkg.version}.tar.gz`), '-C', path.join(root, source), '.'], { stdio: 'inherit' });
+    }
   }
   // Generated Pi package has no lifecycle scripts or build dependencies.
   execFileSync('npm', ['pack', './dist/pi', '--pack-destination', artifacts], { cwd: root, stdio: 'inherit' });

@@ -2,7 +2,7 @@
 name: pandoc-converter
 description: This skill should be used when converting documents between formats using the pandoc CLI utility. Supports 53+ input formats and 68+ output formats including Markdown, PDF, HTML, DOCX, LaTeX, EPUB, presentations (PPTX, Beamer, Reveal.js), and more. Use when tasks involve format conversion, batch document processing, PDF generation with LaTeX/custom templates, bibliography/citation handling with citeproc, applying Lua filters for document transformation, or creating ebooks and presentations from source documents.
 ---
-<!-- Generated from library/skills/pandoc-converter/SKILL.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/skills/pandoc-converter/SKILL.md.hbs; edit library/ and clients/, not this file. -->
 
 # Pandoc Document Converter
 

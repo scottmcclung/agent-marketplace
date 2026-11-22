@@ -8,7 +8,7 @@ model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: blue
 ---
-<!-- Generated from library/agents/diagram-expert.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/agents/diagram-expert.md.hbs; edit library/ and clients/, not this file. -->
 
 You are an expert in creating clear, professional, and visually effective diagrams that represent programming concepts, system architectures, execution flows, and software design patterns. You specialize in transforming complex technical information into intuitive visual representations that enhance understanding and communication.
 

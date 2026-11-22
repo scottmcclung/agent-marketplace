@@ -6,13 +6,18 @@
   "plugins": [
     {
       "name": "devtools",
-      "source": "./dist/claude",
+      "source": "./dist/claude/devtools",
       "description": "A shared prompt library with native Claude Code, Codex, and Pi distributions"
     },
     {
       "name": "statusline",
-      "source": "./dist/claude-plugins/statusline",
+      "source": "./dist/claude/statusline",
       "description": "Shows the repository, today's commits, the model, context usage, 30-day and block cost, the 30-day cache hit rate, and the rate-limit reset time under the prompt."
+    },
+    {
+      "name": "sfdc",
+      "source": "./dist/claude/sfdc",
+      "description": "Salesforce planning and delivery workflows that decompose approved plans into beads milestones and execute them through devtools Salesforce, dev-ops, and UAT specialists."
     }
   ]
 }

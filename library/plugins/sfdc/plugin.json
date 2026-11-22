@@ -1,0 +1,7 @@
+{
+  "name": "sfdc",
+  "description": "Salesforce planning and delivery workflows that decompose approved plans into beads milestones and execute them through devtools Salesforce, dev-ops, and UAT specialists.",
+  "agents": [],
+  "commands": [],
+  "skills": ["plan", "work", "principle-make-the-change-easy"]
+}

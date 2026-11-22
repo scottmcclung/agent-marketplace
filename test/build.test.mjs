@@ -15,6 +15,10 @@ const built = await generate(root);
 const text = file => { assert.ok(built.has(file), `Missing ${file}`); return built.get(file).bytes.toString(); };
 const json = file => JSON.parse(text(file));
 const doc = file => parseDocument(text(file), file);
+// Library plugins and Claude features share host-specific plugin roots.
+const libraryPlugins = (await fs.readdir(path.join(root, 'library/plugins'))).filter(name => name !== 'devtools').sort();
+const libraryPluginOutput = file => libraryPlugins.some(name => file.startsWith(`dist/claude/${name}/`) || file.startsWith(`dist/codex/${name}/`));
+const devtoolsRoot = client => client === 'pi' ? 'dist/pi' : `dist/${client}/devtools`;
 async function fixture(t) {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'agent-marketplace-test-'));
   t.after(() => fs.rm(temp, { recursive: true, force: true }));
@@ -30,8 +34,8 @@ async function changeJson(temp, file, change) {
   await fs.writeFile(path.join(temp, file), JSON.stringify(value));
 }
 
-test('imports all ten agents, three commands, four skills, one Claude feature, and one Pi feature', () => {
-  assert.deepEqual(json('dist/manifest.json').counts, { agents: 10, commands: 3, skills: 4, features: { claude: 1, pi: 1 } });
+test('imports ten agents, three commands, seven local skills, one Claude feature, one Pi feature, and two library plugins', () => {
+  assert.deepEqual(json('dist/manifest.json').counts, { agents: 10, commands: 3, skills: 7, features: { claude: 1, pi: 1 }, plugins: 2 });
 });
 
 test('all native distributions share the same version and input fingerprint', async () => {
@@ -41,18 +45,18 @@ test('all native distributions share the same version and input fingerprint', as
     assert.equal(stamp.version, pkg.version);
     assert.equal(stamp.inputsDigest, json('dist/manifest.json').inputsDigest);
   }
-  assert.equal(json('dist/claude/.claude-plugin/plugin.json').version, pkg.version);
-  assert.equal(json('dist/codex/plugin.json').version, pkg.version);
+  assert.equal(json('dist/claude/devtools/.claude-plugin/plugin.json').version, pkg.version);
+  assert.equal(json('dist/codex/devtools/plugin.json').version, pkg.version);
   assert.equal(json('dist/pi/package.json').version, pkg.version);
 });
 
 test('Claude receives native tools, model profiles, and plugin-qualified references', () => {
-  const agent = doc('dist/claude/agents/js-software-engineer.md');
+  const agent = doc('dist/claude/devtools/agents/js-software-engineer.md');
   assert.equal(agent.meta.model, 'opus');
   assert.equal(agent.meta.tools, 'Read, Write, Edit, Bash, Grep, Glob');
-  assert.match(text('dist/claude/commands/work.md'), /devtools:js-software-engineer/);
-  assert.match(text('dist/claude/commands/plan.md'), /\$ARGUMENTS/);
-  assert.match(text('dist/claude/commands/plan.md'), /\/devtools:plan/);
+  assert.match(text('dist/claude/devtools/commands/work.md'), /devtools:js-software-engineer/);
+  assert.match(text('dist/claude/devtools/commands/plan.md'), /\$ARGUMENTS/);
+  assert.match(text('dist/claude/devtools/commands/plan.md'), /\/devtools:plan/);
 });
 
 test('Pi uses explicit package-agent discovery and mapped specialist names', async () => {
@@ -174,8 +178,8 @@ test('Pi profile mappings and every generated specialist use devtools-router vir
     assert.equal(config.models[profile], `devtools-router/${profile}`);
   }
   assert.equal(config.models.inherit, null);
-  for (const file of await walk(path.join(root, 'library/agents'))) {
-    const source = parseDocument(await fs.readFile(path.join(root, 'library/agents', file), 'utf8'));
+  for (const file of await walk(path.join(root, 'library/plugins/devtools/agents'))) {
+    const source = parseDocument(await fs.readFile(path.join(root, 'library/plugins/devtools/agents', file), 'utf8'));
     const profile = source.meta.modelProfile ?? 'inherit';
     const agent = doc(`dist/pi/agents/devtools-${source.meta.name}.md`);
     assert.equal(agent.meta.model, profile === 'inherit' ? undefined : `devtools-router/${profile}`, source.meta.name);
@@ -189,34 +193,34 @@ test('Pi workflows do not leak Claude plugin identifiers or WebFetch declaration
 
 test('required skills survive the agent adapters', () => {
   assert.deepEqual(doc('dist/pi/agents/devtools-uat-specialist.md').meta.skills, ['playwright-cli']);
-  assert.deepEqual(doc('dist/claude/agents/uat-specialist.md').meta.skills, ['playwright-cli']);
-  assert.match(text('dist/codex/skills/devtools-uat-specialist/SKILL.md'), /playwright-cli/);
-  assert.match(text('dist/codex/skills/devtools-uat-specialist/references/prompt.md'), /playwright-cli/);
+  assert.deepEqual(doc('dist/claude/devtools/agents/uat-specialist.md').meta.skills, ['playwright-cli']);
+  assert.match(text('dist/codex/devtools/skills/devtools-uat-specialist/SKILL.md'), /playwright-cli/);
+  assert.match(text('dist/codex/devtools/skills/devtools-uat-specialist/references/prompt.md'), /playwright-cli/);
 });
 
 test('Codex delegates using bundled skills without inventing registered agent types', () => {
-  const role = text('dist/codex/skills/devtools-js-software-engineer/SKILL.md');
+  const role = text('dist/codex/devtools/skills/devtools-js-software-engineer/SKILL.md');
   assert.match(role, /not a registered custom agent type/);
   assert.match(role, /references\/prompt.md/);
   assert.match(role, /do not pass a skill name as agent_type/i);
-  const agent = TOML.parse(text('dist/codex/agents/devtools-js-software-engineer.toml'));
+  const agent = TOML.parse(text('dist/codex/devtools/agents/devtools-js-software-engineer.toml'));
   assert.equal(agent.name, 'devtools-js-software-engineer');
   assert.equal(agent.model, undefined);
   assert.match(agent.developer_instructions, /senior full-stack/);
-  assert.match(text('dist/codex/skills/devtools-plan/SKILL.md'), /\$devtools-plan/);
-  assert.doesNotMatch(text('dist/codex/skills/devtools-plan/SKILL.md'), /\$ARGUMENTS/);
-  assert.equal(YAML.parse(text('dist/codex/skills/devtools-work/agents/openai.yaml')).policy.allow_implicit_invocation, false);
+  assert.match(text('dist/codex/devtools/skills/devtools-plan/SKILL.md'), /\$devtools-plan/);
+  assert.doesNotMatch(text('dist/codex/devtools/skills/devtools-plan/SKILL.md'), /\$ARGUMENTS/);
+  assert.equal(YAML.parse(text('dist/codex/devtools/skills/devtools-work/agents/openai.yaml')).policy.allow_implicit_invocation, false);
 });
 
 test('marketplace sources resolve to committed distribution directories', () => {
-  assert.equal(json('.claude-plugin/marketplace.json').plugins[0].source, './dist/claude');
-  assert.equal(json('.agents/plugins/marketplace.json').plugins[0].source.path, './dist/codex');
-  assert.equal(json('dist/codex/plugin.json').$schema, 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json');
+  assert.equal(json('.claude-plugin/marketplace.json').plugins[0].source, './dist/claude/devtools');
+  assert.equal(json('.agents/plugins/marketplace.json').plugins[0].source.path, './dist/codex/devtools');
+  assert.equal(json('dist/codex/devtools/plugin.json').$schema, 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json');
 });
 
 test('client-specific skill permissions do not leak between adapters', () => {
-  assert.equal(doc('dist/claude/skills/playwright-cli/SKILL.md').meta['allowed-tools'], 'Bash(playwright-cli:*)');
-  for (const client of ['pi', 'codex']) assert.equal(doc(`dist/${client}/skills/playwright-cli/SKILL.md`).meta['allowed-tools'], undefined);
+  assert.equal(doc('dist/claude/devtools/skills/playwright-cli/SKILL.md').meta['allowed-tools'], 'Bash(playwright-cli:*)');
+  for (const client of ['pi', 'codex']) assert.equal(doc(`${devtoolsRoot(client)}/skills/playwright-cli/SKILL.md`).meta['allowed-tools'], undefined);
 });
 
 test('template rendering is strict and does not HTML-escape Markdown', () => {
@@ -228,30 +232,31 @@ test('template rendering is strict and does not HTML-escape Markdown', () => {
 test('imported literal templates and command argument placeholders are preserved', () => {
   assert.match(text('dist/pi/agents/devtools-laravel-php-expert.md'), /Blade's `\{\{ \}\}` escaping/);
   for (const client of ['claude', 'pi']) {
-    const file = client === 'pi' ? 'dist/pi/prompts/devtools-plan.md' : 'dist/claude/commands/plan.md';
+    const file = client === 'pi' ? 'dist/pi/prompts/devtools-plan.md' : 'dist/claude/devtools/commands/plan.md';
     assert.match(text(file), /\.tmp\/plan-draft\.md/);
   }
 });
 
 test('skill scripts and references are copied byte-for-byte, not evaluated', async () => {
   const resource = 'pandoc-converter/scripts/batch_convert.py';
-  const original = await fs.readFile(path.join(root, 'library/skills', resource));
+  const original = await fs.readFile(path.join(root, 'library/plugins/devtools/skills', resource));
   for (const client of ['claude', 'pi', 'codex']) {
-    assert.deepEqual(built.get(`dist/${client}/skills/${resource}`).bytes, original);
-    assert.equal(built.get(`dist/${client}/skills/${resource}`).mode, 0o755);
-    assert.equal(built.get(`dist/${client}/skills/playwright-cli/references/tracing.md`).mode, 0o644);
+    assert.deepEqual(built.get(`${devtoolsRoot(client)}/skills/${resource}`).bytes, original);
+    assert.equal(built.get(`${devtoolsRoot(client)}/skills/${resource}`).mode, 0o755);
+    assert.equal(built.get(`${devtoolsRoot(client)}/skills/playwright-cli/references/tracing.md`).mode, 0o644);
   }
-  for (const file of await walk(path.join(root, 'library/skills'))) {
+  for (const file of await walk(path.join(root, 'library/plugins/devtools/skills'))) {
     if (file.endsWith('.hbs') || file.split('/')[1] === 'evals') continue;
-    for (const client of ['claude', 'pi', 'codex']) assert.ok(built.has(`dist/${client}/skills/${file}`), file);
+    for (const client of ['claude', 'pi', 'codex']) assert.ok(built.has(`${devtoolsRoot(client)}/skills/${file}`), file);
   }
 });
 
 test('skill eval suites stay in the library and are not packaged', async () => {
-  const evalFiles = (await walk(path.join(root, 'library/skills'))).filter(file => file.split('/')[1] === 'evals');
+  const evalFiles = (await walk(path.join(root, 'library/plugins/devtools/skills'))).filter(file => file.split('/')[1] === 'evals');
   assert.ok(evalFiles.length > 0, 'expected at least one skill eval suite in the library');
   for (const client of ['claude', 'pi', 'codex']) {
-    assert.deepEqual([...built.keys()].filter(file => file.startsWith(`dist/${client}/skills/`) && file.split('/')[4] === 'evals'), [], client);
+    const skills = `${devtoolsRoot(client)}/skills/`;
+    assert.deepEqual([...built.keys()].filter(file => file.startsWith(skills) && file.slice(skills.length).split('/')[1] === 'evals'), [], client);
   }
 });
 
@@ -267,7 +272,7 @@ test('client model and tool maps can change without editing shared prompts', asy
   const agent = parseDocument(outputs.get('dist/pi/agents/devtools-js-software-engineer.md').bytes.toString());
   assert.equal(agent.meta.model, 'my-provider/my-model');
   assert.equal(agent.meta.tools, 'read');
-  assert.equal(parseDocument(outputs.get('dist/claude/agents/js-software-engineer.md').bytes.toString()).meta.model, 'opus');
+  assert.equal(parseDocument(outputs.get('dist/claude/devtools/agents/js-software-engineer.md').bytes.toString()).meta.model, 'opus');
 });
 
 test('unknown profile mappings fail rather than silently dropping restrictions', async t => {
@@ -278,8 +283,8 @@ test('unknown profile mappings fail rather than silently dropping restrictions',
 
 test('missing document values fail with their source path', async t => {
   const temp = await fixture(t);
-  await fs.appendFile(path.join(temp, 'library/commands/work.md.hbs'), '\n{{agents.not-a-real-agent}}\n');
-  await assert.rejects(generate(temp), /library\/commands\/work.md.hbs/);
+  await fs.appendFile(path.join(temp, 'library/plugins/devtools/commands/work.md.hbs'), '\n{{agents.not-a-real-agent}}\n');
+  await assert.rejects(generate(temp), /library\/plugins\/devtools\/commands\/work.md.hbs/);
 });
 
 test('duplicate resource names and unsafe mapped names fail', async t => {
@@ -287,13 +292,13 @@ test('duplicate resource names and unsafe mapped names fail', async t => {
   await changeJson(temp, 'clients/pi/config.json', c => { c.agentName = '../{{name}}'; });
   await assert.rejects(generate(temp), /invalid generated agent name/);
   await changeJson(temp, 'clients/pi/config.json', c => { c.agentName = 'devtools-{{name}}'; });
-  await fs.copyFile(path.join(temp, 'library/agents/js-software-engineer.md.hbs'), path.join(temp, 'library/agents/duplicate.md.hbs'));
+  await fs.copyFile(path.join(temp, 'library/plugins/devtools/agents/js-software-engineer.md.hbs'), path.join(temp, 'library/plugins/devtools/agents/duplicate.md.hbs'));
   await assert.rejects(generate(temp), /Duplicate agents name|filename must match/);
 });
 
 test('oversized skill descriptions fail instead of shipping invalid skills', async t => {
   const temp = await fixture(t);
-  const file = path.join(temp, 'library/skills/playwright-cli/SKILL.md.hbs');
+  const file = path.join(temp, 'library/plugins/devtools/skills/playwright-cli/SKILL.md.hbs');
   const { meta, body } = parseDocument(await fs.readFile(file, 'utf8'));
   meta.description = 'a'.repeat(1025);
   await fs.writeFile(file, `---\n${YAML.stringify(meta)}---\n\n${body}\n`);
@@ -305,11 +310,11 @@ test('check detects edits, missing and stale files without modifying them', asyn
   await write(temp, built);
   await fs.writeFile(path.join(temp, 'dist/stale.txt'), 'stale');
   await fs.writeFile(path.join(temp, 'dist/pi/package.json'), '{}');
-  await fs.unlink(path.join(temp, 'dist/codex/plugin.json'));
+  await fs.unlink(path.join(temp, 'dist/codex/devtools/plugin.json'));
   const differences = await check(temp, built);
   assert.ok(differences.includes('stale: dist/stale.txt'));
   assert.ok(differences.includes('changed: dist/pi/package.json'));
-  assert.ok(differences.includes('missing: dist/codex/plugin.json'));
+  assert.ok(differences.includes('missing: dist/codex/devtools/plugin.json'));
   assert.equal(await fs.readFile(path.join(temp, 'dist/stale.txt'), 'utf8'), 'stale');
   await write(temp, built);
   assert.deepEqual(await check(temp, built), []);
@@ -317,7 +322,7 @@ test('check detects edits, missing and stale files without modifying them', asyn
 
 test('source symlinks are rejected', { skip: process.platform === 'win32' ? 'Windows symlink creation requires host privileges' : false }, async t => {
   const temp = await fixture(t);
-  await fs.symlink(path.join(temp, 'package.json'), path.join(temp, 'library/skills/playwright-cli/external'));
+  await fs.symlink(path.join(temp, 'package.json'), path.join(temp, 'library/plugins/devtools/skills/playwright-cli/external'));
   await assert.rejects(generate(temp), /Symlinks are not supported/);
 });
 
@@ -325,12 +330,12 @@ test('cross-specialist references are mapped in descriptions and bodies', () => 
   const pi = doc('dist/pi/agents/devtools-crystal-code-reviewer.md');
   assert.match(pi.meta.description, /devtools-crystal-lang-engineer/);
   assert.match(pi.body, /devtools-crystal-lang-engineer/);
-  assert.match(doc('dist/claude/agents/crystal-code-reviewer.md').meta.description, /devtools:crystal-lang-engineer/);
+  assert.match(doc('dist/claude/devtools/agents/crystal-code-reviewer.md').meta.description, /devtools:crystal-lang-engineer/);
 });
 
 test('shared metadata typos fail rather than falling back to host defaults', async t => {
   const temp = await fixture(t);
-  const file = path.join(temp, 'library/agents/js-software-engineer.md.hbs');
+  const file = path.join(temp, 'library/plugins/devtools/agents/js-software-engineer.md.hbs');
   await fs.writeFile(file, (await fs.readFile(file, 'utf8')).replace('modelProfile:', 'modleProfile:'));
   await assert.rejects(generate(temp), /unknown agents metadata field: modleProfile/);
 });
@@ -345,8 +350,8 @@ test('Codex explicit model maps are reflected in both delegation and TOML export
   const temp = await fixture(t);
   await changeJson(temp, 'clients/codex/config.json', c => { c.models.deep = 'configured-model'; });
   const outputs = await generate(temp);
-  assert.match(outputs.get('dist/codex/skills/devtools-js-software-engineer/SKILL.md').bytes.toString(), /Request model `configured-model`/);
-  assert.equal(TOML.parse(outputs.get('dist/codex/agents/devtools-js-software-engineer.toml').bytes.toString()).model, 'configured-model');
+  assert.match(outputs.get('dist/codex/devtools/skills/devtools-js-software-engineer/SKILL.md').bytes.toString(), /Request model `configured-model`/);
+  assert.equal(TOML.parse(outputs.get('dist/codex/devtools/agents/devtools-js-software-engineer.toml').bytes.toString()).model, 'configured-model');
 });
 
 test('attributes for nonexistent skills fail early', async t => {
@@ -456,13 +461,14 @@ test('output without a features folder only drops feature output', async t => {
   await fs.rm(path.join(temp, 'features'), { recursive: true, force: true });
   const outputs = await generate(temp);
   // The manifest and library-version files carry inputsDigest and checksums over all inputs, so they differ for reasons outside this comparison.
-  const owned = file => file.startsWith('dist/pi/extensions/') || file.startsWith('dist/claude-plugins/') || file === '.claude-plugin/marketplace.json' || file === 'dist/manifest.json' || /^dist\/[^/]+\/library-version\.json$/.test(file);
-  assert.deepEqual([...outputs.keys()].filter(file => file.startsWith('dist/pi/extensions/') || file.startsWith('dist/claude-plugins/')), []);
+  const featureOutput = file => file.startsWith('dist/pi/extensions/') || (file.startsWith('dist/claude/') && !file.startsWith('dist/claude/devtools/') && !libraryPluginOutput(file) && !['dist/claude/library-version.json', 'dist/claude/LICENSE'].includes(file));
+  const owned = file => featureOutput(file) || file === '.claude-plugin/marketplace.json' || file === 'dist/manifest.json' || /^dist\/[^/]+\/library-version\.json$/.test(file);
+  assert.deepEqual([...outputs.keys()].filter(featureOutput), []);
   const catalog = JSON.parse(outputs.get('.claude-plugin/marketplace.json').bytes);
   const { plugins: builtPlugins, ...builtRest } = json('.claude-plugin/marketplace.json');
   const { plugins, ...rest } = catalog;
   assert.deepEqual(rest, builtRest);
-  assert.deepEqual(plugins, [builtPlugins[0]], 'only the unchanged devtools entry remains');
+  assert.deepEqual(plugins, [builtPlugins[0], ...builtPlugins.filter(plugin => libraryPlugins.includes(plugin.name))], 'only the unchanged devtools and library plugin entries remain');
   for (const [file, output] of built) if (!owned(file)) assert.deepEqual(outputs.get(file), output, file);
   assert.deepEqual([...outputs.keys()].filter(file => !owned(file)).sort(), [...built.keys()].filter(file => !owned(file)).sort());
 });
@@ -493,7 +499,7 @@ async function addClaudeFile(dir, file, contents) {
   await fs.mkdir(path.dirname(path.join(dir, 'claude', file)), { recursive: true });
   await fs.writeFile(path.join(dir, 'claude', file), contents);
 }
-const claudePluginFiles = outputs => [...outputs.keys()].filter(file => file.startsWith('dist/claude-plugins/')).sort();
+const claudePluginFiles = outputs => [...outputs.keys()].filter(file => file.startsWith('dist/claude/') && !file.startsWith('dist/claude/devtools/') && !libraryPluginOutput(file) && !['dist/claude/library-version.json', 'dist/claude/LICENSE'].includes(file)).sort();
 
 test('each Claude feature is copied to its own plugin directory', async t => {
   const temp = await fixture(t);
@@ -503,10 +509,11 @@ test('each Claude feature is copied to its own plugin directory', async t => {
   await addClaudeFile(dir, 'scripts/status.sh', script);
   const outputs = await generate(temp);
   assert.deepEqual(claudePluginFiles(outputs), [
-    'dist/claude-plugins/sample/.claude-plugin/plugin.json',
-    'dist/claude-plugins/sample/scripts/status.sh',
+    'dist/claude/sample/.claude-plugin/plugin.json',
+    'dist/claude/sample/LICENSE',
+    'dist/claude/sample/scripts/status.sh',
   ]);
-  assert.deepEqual(outputs.get('dist/claude-plugins/sample/scripts/status.sh').bytes, script);
+  assert.deepEqual(outputs.get('dist/claude/sample/scripts/status.sh').bytes, script);
 });
 
 test('Claude feature plugin.json carries the root package version', async t => {
@@ -515,8 +522,8 @@ test('Claude feature plugin.json carries the root package version', async t => {
   await addClaudeFile(dir, '.claude-plugin/plugin.json', JSON.stringify({ name: 'sample', version: '9.9.9', description: 'Status line' }) + '\n');
   const pkg = JSON.parse(await fs.readFile(path.join(temp, 'package.json'), 'utf8'));
   const outputs = await generate(temp);
-  assert.ok(outputs.has('dist/claude-plugins/sample/.claude-plugin/plugin.json'), 'Missing emitted plugin.json');
-  const plugin = JSON.parse(outputs.get('dist/claude-plugins/sample/.claude-plugin/plugin.json').bytes);
+  assert.ok(outputs.has('dist/claude/sample/.claude-plugin/plugin.json'), 'Missing emitted plugin.json');
+  const plugin = JSON.parse(outputs.get('dist/claude/sample/.claude-plugin/plugin.json').bytes);
   assert.deepEqual(plugin, { name: 'sample', version: pkg.version, description: 'Status line' });
 });
 
@@ -538,9 +545,10 @@ test('Claude feature test files and generated .claude-plugin/types are not copie
   await addClaudeFile(dir, '.claude-plugin/types/claude.d.ts', 'export {};\n');
   const outputs = await generate(temp);
   assert.deepEqual(claudePluginFiles(outputs), [
-    'dist/claude-plugins/sample/.claude-plugin/plugin.json',
-    'dist/claude-plugins/sample/index.ts',
-    'dist/claude-plugins/sample/view/panel.tsx',
+    'dist/claude/sample/.claude-plugin/plugin.json',
+    'dist/claude/sample/LICENSE',
+    'dist/claude/sample/index.ts',
+    'dist/claude/sample/view/panel.tsx',
   ]);
 });
 
@@ -550,7 +558,7 @@ test('a top-level types folder named by plugin.json is copied', async t => {
   await addClaudeFile(dir, '.claude-plugin/plugin.json', JSON.stringify({ name: 'sample', description: 'x', types: './types' }) + '\n');
   await addClaudeFile(dir, 'types/status.d.ts', 'export {};\n');
   const outputs = await generate(temp);
-  assert.ok(outputs.has('dist/claude-plugins/sample/types/status.d.ts'), 'Top-level types/ must be copied');
+  assert.ok(outputs.has('dist/claude/sample/types/status.d.ts'), 'Top-level types/ must be copied');
 });
 
 test('the Claude catalog lists each Claude feature after an unchanged devtools entry', async t => {
@@ -564,8 +572,9 @@ test('the Claude catalog lists each Claude feature after an unchanged devtools e
   assert.deepEqual(catalog.plugins[0], json('.claude-plugin/marketplace.json').plugins[0], 'devtools entry must not change');
   assert.equal(catalog.plugins[0].name, 'devtools');
   assert.deepEqual(catalog.plugins.slice(1), [
-    { name: 'alpha', source: './dist/claude-plugins/alpha', description: 'Alpha feature' },
-    { name: 'sample', source: './dist/claude-plugins/sample', description: 'Shows session status' },
+    { name: 'alpha', source: './dist/claude/alpha', description: 'Alpha feature' },
+    { name: 'sample', source: './dist/claude/sample', description: 'Shows session status' },
+    ...json('.claude-plugin/marketplace.json').plugins.filter(plugin => libraryPlugins.includes(plugin.name)),
   ]);
 });
 
@@ -618,8 +627,8 @@ test('Claude feature shebang scripts are executable and other files are not', as
   await addClaudeFile(dir, 'scripts/status.sh', '#!/bin/sh\necho ok\n');
   await addClaudeFile(dir, 'README.md', 'readme\n');
   const outputs = await generate(temp);
-  assert.equal(outputs.get('dist/claude-plugins/sample/scripts/status.sh').mode, 0o755);
-  assert.equal(outputs.get('dist/claude-plugins/sample/README.md').mode, 0o644);
+  assert.equal(outputs.get('dist/claude/sample/scripts/status.sh').mode, 0o755);
+  assert.equal(outputs.get('dist/claude/sample/README.md').mode, 0o644);
 });
 
 test('a top-level types folder not named by plugin.json is copied', async t => {
@@ -627,7 +636,7 @@ test('a top-level types folder not named by plugin.json is copied', async t => {
   const dir = await addFeature(temp, 'sample');
   await addClaudeFile(dir, 'types/status.d.ts', 'export {};\n');
   const outputs = await generate(temp);
-  assert.ok(outputs.has('dist/claude-plugins/sample/types/status.d.ts'), 'Top-level types/ must be copied');
+  assert.ok(outputs.has('dist/claude/sample/types/status.d.ts'), 'Top-level types/ must be copied');
 });
 
 test('a nested .claude-plugin/types folder is copied', async t => {
@@ -635,15 +644,15 @@ test('a nested .claude-plugin/types folder is copied', async t => {
   const dir = await addFeature(temp, 'sample');
   await addClaudeFile(dir, 'sub/.claude-plugin/types/x.d.ts', 'export {};\n');
   const outputs = await generate(temp);
-  assert.ok(outputs.has('dist/claude-plugins/sample/sub/.claude-plugin/types/x.d.ts'), 'Only the top-level .claude-plugin/types is excluded');
+  assert.ok(outputs.has('dist/claude/sample/sub/.claude-plugin/types/x.d.ts'), 'Only the top-level .claude-plugin/types is excluded');
 });
 
-const statuslinePlugin = 'dist/claude-plugins/statusline/';
+const statuslinePlugin = 'dist/claude/statusline/';
 
 test('the catalog lists the statusline feature after devtools', () => {
   const plugins = json('.claude-plugin/marketplace.json').plugins;
-  assert.deepEqual(plugins.map(plugin => plugin.name), ['devtools', 'statusline']);
-  assert.equal(plugins[1].source, './dist/claude-plugins/statusline');
+  assert.deepEqual(plugins.map(plugin => plugin.name), ['devtools', 'statusline', 'sfdc']);
+  assert.equal(plugins[1].source, './dist/claude/statusline');
 });
 
 test('the statusline distribution ships without tests or generated types', async () => {

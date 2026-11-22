@@ -6,6 +6,7 @@
   "commandName": "devtools-{{name}}",
   "commandReference": "/devtools-{{name}}",
   "skillName": "{{name}}",
+  "plugins": { "devtools": { "skillName": "{{name}}", "skillReference": "{{name}}" }, "sfdc": { "skillName": "sfdc-{{name}}", "skillReference": "/skill:sfdc-{{name}}" } },
   "models": { "deep": "devtools-router/deep", "balanced": "devtools-router/balanced", "fast": "devtools-router/fast", "inherit": null },
   "tools": {
     "development": ["read", "write", "edit", "bash", "grep", "find", "ls"],

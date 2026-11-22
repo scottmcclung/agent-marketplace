@@ -3,7 +3,7 @@
 ## Single authoring source, native delivery
 
 The library is independent of the clients' packaging formats. A deterministic
-Node.js compiler renders shared documents with a client value map, then emits
+Node.js compiler renders plugin-owned documents with a client value map, then emits
 host metadata through YAML/TOML serializers and client wrapper templates.
 
 ```text
@@ -39,24 +39,74 @@ untouched; filesystem failures during writing are not an atomic transaction.
 Generated files are committed so native Git consumers do not need to execute
 a build. CI checks them before a release.
 
-Each target includes `library-version.json`: library version, client, agent
-mode, and an input SHA-256 fingerprint. The fingerprint includes shared sources,
-client configurations/templates, every file under `features/`, compiler code, package
-metadata, and the license.
+Each host has a stamp at `dist/<client>/library-version.json`, outside the
+Claude/Codex plugin roots: library version, client, agent mode, and an input
+SHA-256 fingerprint. The fingerprint includes
+every file under `library/plugins/`, client configurations/templates (including
+plugin maps), every file under `features/`, compiler code, package metadata,
+and the license.
 It intentionally excludes timestamps and the current commit SHA to avoid
 self-referential or non-reproducible builds. `dist/manifest.json` records output
-checksums and executable modes (excluding itself).
+checksums and executable modes (excluding itself). Its `counts` include the
+number of library plugins.
+
+## Library plugins
+
+The source contract gives every library plugin the same ownership
+model. Each lives at `library/plugins/<name>/` with a `plugin.json` and local
+`agents/`, `commands/`, and `skills/` as needed. The manifest has exactly
+`name`, `description`, `agents`, `commands`, and `skills`. Each list declares
+local canonical names, with an empty list when the plugin has none of that
+kind. Every source must be declared by its owning plugin. There is no shared
+source list or cross-plugin source reuse.
+
+`devtools` owns the existing specialist agents, workflow commands, and skills.
+`sfdc` owns no agents or commands. It owns `plan`, `work`, and a separate
+physical copy of `principle-make-the-change-easy` under its own `skills/`.
+Changes to either copy of the principle are independent authoring decisions.
+
+All Claude plugins live under `dist/claude/`: `devtools/`, `sfdc/`, and
+`statusline/`. All Codex plugins live under `dist/codex/`: `devtools/` and
+`sfdc/`. Catalog entries point to those nested plugin roots. Pi remains one
+package at `dist/pi/`. Native names and invocation syntax remain unchanged.
+Sfdc delivery is:
+
+| Client | Plugin output | Catalog | Skill names |
+| --- | --- | --- | --- |
+| Claude | `dist/claude/sfdc/` with `.claude-plugin/plugin.json` | separate entry in `.claude-plugin/marketplace.json` | plugin namespace, `/sfdc:plan` |
+| Codex | `dist/codex/sfdc/` with `plugin.json` | separate entry in `.agents/plugins/marketplace.json` | `sfdc-plan`, invoked as `$sfdc-plan` |
+| Pi | merged into `dist/pi/skills/` | none; same package | `sfdc-plan`, invoked as `/skill:sfdc-plan` |
+
+Pi merges sfdc skills into the existing package so the package's skill
+discovery path stays `./skills`. Sfdc skill names share Pi's flat skill
+namespace with devtools skills, which is why the existing sfdc map adds a
+prefix. A collision fails the build. Existing core client fields and sfdc
+maps stay unchanged. An explicit `plugins.devtools` mapping may use the
+existing `config.skillName` for both `skillName` and `skillReference` to
+preserve devtools prompt bodies, whose skill context contains names.
+
+Sfdc skills reference the devtools agents at runtime. On Claude and Codex sfdc
+does not bundle those agents, so `devtools` must be installed alongside it. On
+Pi the specialists come from the same package. The `sfdc` workflows check for
+each specialist and stop if one is missing.
+
+`devtools` is the existing plugin's identity, not a forbidden plugin name.
+Plugin names must be unique and must not collide with published feature names.
+`features/` remains a separate source tree for harness-specific features such
+as model routing; these features do not become library plugins.
 
 ## Compatibility contract
 
 ### Claude Code
 
 - Catalog: `.claude-plugin/marketplace.json`.
-- Plugin: `dist/claude/.claude-plugin/plugin.json`.
+- Devtools manifest: `dist/claude/devtools/.claude-plugin/plugin.json`.
 - Agents: native Markdown files under `agents/`.
 - Commands: Markdown files under `commands/`.
 - Skills: directories under `skills/`.
 - Specialist references use the plugin namespace (`devtools:...`).
+- Each catalog entry points to `dist/claude/<name>/`. The `sfdc` library
+  plugin is listed after devtools and the Claude feature plugins.
 
 Keep `devtools` as the plugin name for continuity while using
 `agent-marketplace` as the catalog/library name. Install the old and new
@@ -71,6 +121,8 @@ marketplace versions separately only for deliberate testing, not normal use.
   discovers from Pi-installed packages.
 - Agents are prefixed `devtools-` to avoid collisions in Pi's flat namespace.
 - Commands become prompt templates; skills remain skills.
+- Library plugin skills are merged into `skills/` with a plugin prefix, such
+  as `sfdc-plan`.
 - The same package declares its extensions in `pi.extensions` by the glob
   `extensions/*/index.mjs`; each feature is copied from `features/<name>/pi/`
   to `extensions/<name>/`. Agent model profiles map to `devtools-router/deep`,
@@ -90,8 +142,11 @@ marketplace versions separately only for deliberate testing, not normal use.
 ### Codex
 
 - Catalog: `.agents/plugins/marketplace.json`.
-- Plugin: portable root manifest `dist/codex/plugin.json`.
+- Devtools manifest: `dist/codex/devtools/plugin.json`.
 - Commands become explicitly invoked workflow skills.
+- Additional library plugins such as `sfdc` are separate plugins under
+  `dist/codex/<name>/` with their own catalog entries. The sfdc skills
+  reference the devtools delegation skills, so devtools must also be installed.
 - Specialists become delegation skills, each with a local
   `references/prompt.md` containing the shared role instructions.
 - A parent loads the role skill, reads the role prompt, starts a generic child

@@ -1,7 +1,7 @@
 ---
 description: Review this session and propose instruction and workflow improvements for approval.
 ---
-<!-- Generated from library/commands/reflection.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/commands/reflection.md.hbs; edit library/ and clients/, not this file. -->
 
 You are an expert in prompt engineering, specializing in optimizing AI code assistant instructions. Your task is to analyze and improve the instructions for Pi.
 Follow these steps carefully:

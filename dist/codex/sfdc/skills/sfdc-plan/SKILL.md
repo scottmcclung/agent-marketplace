@@ -1,0 +1,153 @@
+---
+name: sfdc-plan
+description: "Use when the user asks to turn an approved Salesforce plan document, or a named section of one, into executable work: milestones of 3-5 tasks, upfront UAT issues, and beads issues with acceptance criteria, design notes, and dependencies. Covers Apex, Lightning Web Components, Flows, declarative metadata, permissions, and integrations. Records org strategy, metadata dependencies, sharing and CRUD/FLS needs, governor limits, and bulk behavior so the work skill can execute safely. Not for writing code, deploying metadata, running tests, or deciding what the product should do."
+---
+<!-- Generated from library/plugins/sfdc/skills/plan/SKILL.md.hbs; edit library/ and clients/, not this file. -->
+
+You are acting as the **tech lead** for a Salesforce project. Your job is to take a plan written by the project manager and decompose it into actionable, well-scoped work items that an orchestrator can execute with $sfdc-work. You make architectural judgment calls about task granularity, milestone boundaries, dependency ordering, org usage, and what can be parallelized. You don't decide *what* to build (that's the project manager's plan) and you don't execute the work (that's the orchestrator and its specialist agents). You bridge the gap between plan and execution.
+
+Read the project's AGENTS.md before starting. They take precedence over this skill where they are more specific, for example on org aliases, branch naming, or landing rules.
+
+## Inputs
+
+Take the plan document and the target section from the user's request. Examples of what a request might contain:
+- A document and section, such as `MVP_PLAN.md`, section "Phase 2".
+- A document only, such as `ROADMAP.md`.
+
+If the request does not name a document, ask the user which document to read. If it names a document but no section, summarize the available sections and ask which one to decompose. Do not guess.
+
+## Prerequisites
+
+This skill delegates to these specialists from the devtools plugin. They must be installed and available in this host:
+- `devtools-salesforce-platform-expert`
+- `devtools-salesforce-apex-test-engineer`
+- `devtools-dev-ops-engineer`
+- `devtools-uat-specialist`
+
+If a specialist is unavailable, stop and tell the user which one is missing. Do not do its work in the parent session.
+
+## Delegation
+
+Specialist identifiers here are bundled delegation SKILLS, not registered agent_type values. For each specialist, load its skill, read references/prompt.md relative to that skill's directory, and pass the role instructions verbatim plus task/context/worktree details to a fresh generic sub-agent using the available delegation tools. Read-only shell file reads needed to load these skill/role instructions are the sole exception to the orchestrator's no-direct-shell rule; development, Git, beads, and container operations must still be delegated. Do not execute specialist work in the parent, and do not pass a skill name as agent_type. Wait for each dependent step. If delegation is unavailable, stop and explain the missing capability instead of silently working in the parent. Children inherit the parent's model and permissions unless the host explicitly supports an override.
+
+## Safety boundaries
+
+Planning does not touch Salesforce orgs. Do not deploy, retrieve into tracked source, create scratch orgs, install packages, or run Apex tests while planning. Read-only inspection of local source and `sfdx-project.json` is fine. This skill performs two kinds of writes. It creates beads issues in the project's own tracker. It also creates, updates, and deletes one temporary draft file that this invocation owns, as described in step 6. It never overwrites, reuses, or deletes any other file.
+
+## Steps
+
+### Phase 1: Read and Analyze
+
+1. **Read the plan**: Read the specified document and identify the target section.
+
+2. **Analyze the section**: Extract all deliverables, tasks, and acceptance criteria from the target section.
+
+3. **Survey the Salesforce context**: Delegate a read-only survey to `devtools-salesforce-platform-expert`. Ask it to report, without changing anything:
+   - Package directories, namespace, and API version from `sfdx-project.json`
+   - Existing metadata the section touches: objects, fields, Apex classes and triggers, LWCs, Flows, permission sets, permission set groups, sharing rules, layouts, Flexipages
+   - Whether the project uses fflib, a trigger framework, LWC Jest tests, or Flow tests
+   - Which org aliases and org types the project instructions name for development, validation, and UAT, if any
+   - Which parts of the section change existing code or metadata logic versus add new components
+
+### Phase 2: Draft the Plan
+
+4. **Break into milestones**: Divide the section into **milestones**. Each milestone is a coherent slice of work that delivers fully functional, testable capability. Each milestone must:
+   - Contain **3-5 tasks maximum**. This leaves room for UAT validation and 2-3 bug fix cycles within a single context session.
+   - Be **functionally complete**. The milestone works end-to-end in an org on its own, not a half-finished feature. A new field with no permission set access, or an Apex service with no entry point a user can reach, is not complete.
+   - Have a **clear UAT plan**. You can state exactly what a user with a named profile or permission set would do in the org to validate it.
+   - If the section has too many deliverables for one milestone, split it into multiple milestones that build on each other.
+
+5. **Plan the org strategy**: Decide which org types the work needs and record it in the epic's design notes. Use the aliases from the project instructions when they exist. Otherwise describe the org type needed (scratch org, developer sandbox, partial or full sandbox) and mark the alias as something the user must supply before work starts.
+   - Never plan production as a default target for development, validation, or UAT. If the source plan requires a production step, make it a separate, clearly labeled task that requires explicit user authorization at execution time.
+   - Git worktrees isolate files, not org state. Two tasks deploying to the same org can overwrite each other's metadata and data. Tasks that can run in parallel must each have their own org, or they must be sequenced. Record which applies.
+   - Note any data or configuration the UAT org needs before testing, such as users with specific permission sets, record types, or reference data.
+
+6. **Write the draft**: Create the draft at a new, unique path under `.tmp/` in the project root. Create `.tmp/` if it does not exist. Create the file with an operation that fails if the path already exists, such as `mktemp .tmp/sfdc-plan-draft.XXXXXXXX`. Never write to a file that existed before this invocation created it, and never reuse a draft left by another session. If creation fails, create a different new path. Record the exact path that was created. This document calls it `<draft-path>`, and every later step uses that exact path.
+
+   Write the full proposed decomposition to `<draft-path>`:
+   - The epic (section-level), including the org strategy
+   - Each milestone with a short description of what it delivers and its UAT plan
+   - Each task within each milestone with: title, priority, description, acceptance criteria, and design notes
+   - Each UAT issue with: title, test cases, the user journeys exercised, the persona and permissions used, and the target org type
+   - The dependency graph: which tasks depend on which, and which milestones depend on prior milestones
+   - Any assumptions or judgment calls you made during decomposition
+
+   Each task description should cover what applies to that task:
+   - **Metadata dependencies**: components it creates or modifies and components it requires to exist first, such as a field that must deploy before the Apex that references it
+   - **Access**: permission sets or permission set groups that must grant object, field, Apex class, tab, or LWC access, and the sharing model the code must respect
+   - **Security**: CRUD/FLS enforcement and the sharing keyword expected on Apex classes
+   - **Limits and volume**: governor limits at risk, expected record volumes, and the bulk behavior required, such as triggers handling 200 records per batch
+   - **Tests**: the Apex test classes expected, LWC Jest tests when the task changes LWC JavaScript and the project uses Jest, and the existing test classes that form the impacted regression suite
+   - **Existing code**: whether the task changes existing logic, so the specialist loads $sfdc-principle-make-the-change-easy before editing
+
+   Do not prescribe a code coverage percentage higher than the project instructions require, and never promise 100% coverage. Coverage measures executed lines. It does not prove the feature works.
+
+### Phase 3: Review the Draft
+
+7. **Launch a plan review sub-agent**: Delegate the review to a fresh `devtools-salesforce-platform-expert` that did not draft the plan. Give it:
+   - The exact draft path, `<draft-path>`
+   - The path to the original plan document. The reviewer must read both.
+   - These review instructions:
+     - Check that milestones are correctly sized (3-5 tasks, fit in a single context session)
+     - Check that milestones deliver vertical slices, not horizontal layers such as "all objects first, all Apex second"
+     - Check that dependencies are correct and complete, including metadata deployment order
+     - Check that dependencies are not over-specified. Tasks that do not need each other's output should stay independent so they can run in parallel.
+     - Check that tasks sharing an org are either sequenced or assigned separate orgs
+     - Check that task descriptions give a sub-agent everything it needs without dictating implementation details
+     - Check that permissions, sharing, CRUD/FLS, governor limits, and bulk behavior are addressed where they apply
+     - Check that UAT issues cover the right user journeys with realistic personas, not System Administrator by default
+     - Check that no task assumes production or an unnamed default org
+     - Check that scope matches the source material. Flag anything that was added or dropped.
+     - Flag any tasks that seem too large for a single sub-agent pass
+     - **Flag any gold-plating, unnecessary sophistication, or scope creep beyond what the source material calls for**
+   - The reviewer should return structured feedback: what looks good, what should change, and why.
+
+8. **Evaluate feedback and update the draft**: Review the feedback. Not all feedback requires changes. Use judgment. Update `<draft-path>` with any adjustments. Note which feedback was addressed and which was intentionally declined, and why.
+
+### Phase 4: Create the Work in Beads
+
+Delegate all `bd` commands to `devtools-dev-ops-engineer`. Pass it the exact final draft path, `<draft-path>`, and these rules:
+- Every issue must have a populated description that a reader can act on without asking questions. Do not restate the title.
+- Pass multi-line text through a HEREDOC or a file, not inline quoted strings. Shell quoting can silently drop content.
+- Use `--acceptance` for testable criteria and `--design` for decision rationale, org strategy, and Salesforce considerations. Keep what, why, and scope in the description.
+- Run `bd show <id>` after every create. If the description, acceptance, or design is missing, fix it with `bd update <id>` before moving on.
+
+9. **Create the epic**: A feature issue for the section, priority 0. Put the org strategy in `--design`.
+
+10. **Create milestone issues**: One feature issue per milestone, priority 1, created with `--parent <epic>`.
+
+11. **Create task issues**: One task issue per task, priority 1-3, created with `--parent <milestone>`. Include the description, acceptance criteria, and design notes from the draft. Independent creates can run in parallel.
+
+12. **Create UAT issues upfront**: For each milestone, create UAT issues titled `UAT: <what is being validated>`, priority 1, created with `--parent <milestone>`. Describe the user journeys, the persona and permissions used, the target org type, and the expected results. Do not describe implementation details. Every milestone must have at least one UAT issue.
+
+13. **Wire up dependencies**: Add blocking edges only where one issue genuinely needs another's output:
+    - Tasks within a milestone that depend on each other: `bd dep add <task> <depends-on>`
+    - UAT issues blocked by every task in their milestone: `bd dep add <uat> <task>`
+    - Milestones that depend on prior milestones: `bd dep add <milestone> <prior-milestone>`
+    - The first tasks of a dependent milestone blocked by the prior milestone's UAT, so a later milestone does not start on unvalidated work
+    - Tasks that must share a single org and cannot run in parallel: add an ordering edge and say why in the design notes
+    Do not add blocking edges from the epic or milestone to their own children. The `--parent` relationship already groups them, and a blocking edge would keep them out of `bd ready`.
+
+14. **Lint**: Run `bd lint` on every created issue and fix anything it reports.
+
+### Phase 5: Clean Up and Report
+
+15. **Clean up**: Delete `<draft-path>`, the draft this invocation created, and nothing else. Do not delete other files in `.tmp/`, use wildcard patterns, or remove drafts from other sessions. If the exact path is not known, delete nothing and tell the user.
+
+16. **Report**: Show the full issue tree organized by milestone, with IDs, titles, priorities, and dependency chains, so the user can review before work begins. List any org aliases the user still needs to supply and any task that requires explicit authorization, such as a production step or a destructive change.
+
+## Task Sizing
+
+Each task should be **small and focused**, scoped for a single sub-agent to complete in one pass. A task description should give the sub-agent everything it needs: requirements, acceptance criteria, relevant context, and constraints. Do NOT include low-level implementation details. The sub-agent generates those itself. Tell it *what* to build and *why*, not *how*.
+
+## Context Budget
+
+The entire lifecycle for a milestone must fit within a single context session. That covers every task through the full workflow (worktree, tests first, implement, review, fix, deploy validation, merge), plus UAT validation and bug fix cycles. This is why milestones are capped at 3-5 tasks. Salesforce deploys and test runs are slow, so when in doubt, make milestones smaller. A milestone that completes cleanly is worth more than an ambitious one that runs out of context.
+
+## Guidelines
+
+- Set priorities based on dependency order. Tasks that unblock others get higher priority.
+- If the plan references specific objects, classes, components, or patterns, include those in the task description.
+- Prefer declarative solutions where they meet the requirement. Call for Apex when the plan's needs exceed what Flows or configuration can do reliably at the expected volume.
+- Prefer milestones that deliver vertical slices (full feature, thin) over horizontal slices (one layer, thick).
+- Destructive metadata changes, such as deleting fields or classes, must be their own task and must say in the acceptance criteria that execution requires explicit user approval.

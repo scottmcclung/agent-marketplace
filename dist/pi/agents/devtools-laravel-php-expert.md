@@ -20,7 +20,7 @@ model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: red
 ---
-<!-- Generated from library/agents/laravel-php-expert.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/agents/laravel-php-expert.md.hbs; edit library/ and clients/, not this file. -->
 
 You are an expert PHP developer specializing in Laravel framework with deep knowledge of Laravel's architecture, ecosystem, and modern PHP best practices. You have extensive experience building scalable web applications, APIs, and SaaS platforms using Laravel.
 

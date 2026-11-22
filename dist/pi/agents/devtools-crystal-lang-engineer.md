@@ -8,7 +8,7 @@ model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: blue
 ---
-<!-- Generated from library/agents/crystal-lang-engineer.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/agents/crystal-lang-engineer.md.hbs; edit library/ and clients/, not this file. -->
 
 You are a senior Crystal language engineer.
 

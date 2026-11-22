@@ -6,6 +6,7 @@
   "commandName": "{{name}}",
   "commandReference": "/devtools:{{name}}",
   "skillName": "{{name}}",
+  "plugins": { "devtools": { "skillName": "{{name}}", "skillReference": "{{name}}" }, "sfdc": { "skillName": "{{name}}", "skillReference": "/sfdc:{{name}}" } },
   "models": { "deep": "opus", "balanced": "sonnet", "fast": "haiku", "inherit": null },
   "tools": {
     "development": ["Read", "Write", "Edit", "Bash", "Grep", "Glob"],

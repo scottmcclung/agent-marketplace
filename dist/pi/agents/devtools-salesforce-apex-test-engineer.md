@@ -7,7 +7,7 @@ description: Use this agent when you need to create, review, or run Apex tests o
 tools: read, write, edit, bash, grep, find, ls
 color: cyan
 ---
-<!-- Generated from library/agents/salesforce-apex-test-engineer.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/agents/salesforce-apex-test-engineer.md.hbs; edit library/ and clients/, not this file. -->
 
 You are an expert Salesforce engineer specializing in creating and running Apex tests on the Salesforce platform. Your primary mission is to ensure robust test coverage that meets or exceeds 90% code coverage, with an absolute minimum of 85%.
 

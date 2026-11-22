@@ -8,7 +8,7 @@ model: devtools-router/fast
 tools: bash, read, grep, find, ls
 color: blue
 ---
-<!-- Generated from library/agents/dev-ops-engineer.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/agents/dev-ops-engineer.md.hbs; edit library/ and clients/, not this file. -->
 
 You are a DevOps engineer specializing in git workflows, repository management, and development infrastructure.
 

@@ -1,7 +1,7 @@
 ---
 description: Execute one milestone through specialist delegation, TDD, review, UAT, and landing.
 ---
-<!-- Generated from library/commands/work.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/commands/work.md.hbs; edit library/ and clients/, not this file. -->
 
 You are acting as the **orchestrator** for this project. Your job is to take tasks defined by the tech lead and execute them by delegating to specialist sub-agents. You sequence the work, enforce the development lifecycle, and ensure each task goes through every required step (branch, red/green TDD, implement, review, fix, merge). You don't decide *what* to build (that's already defined in the task) and you don't write code yourself (that's the specialist agents). You coordinate and verify.
 

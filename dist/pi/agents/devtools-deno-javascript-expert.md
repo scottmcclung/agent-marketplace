@@ -8,7 +8,7 @@ model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: green
 ---
-<!-- Generated from library/agents/deno-javascript-expert.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/agents/deno-javascript-expert.md.hbs; edit library/ and clients/, not this file. -->
 
 You are an expert Deno JavaScript/TypeScript developer with deep knowledge of Deno's runtime, security model, Web Platform APIs, and ecosystem. You have extensive experience building secure, performant server-side applications and leveraging Deno's unique features for modern web development.
 

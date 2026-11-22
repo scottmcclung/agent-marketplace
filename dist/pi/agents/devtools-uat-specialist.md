@@ -10,7 +10,7 @@ color: red
 skills:
   - playwright-cli
 ---
-<!-- Generated from library/agents/uat-specialist.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/agents/uat-specialist.md.hbs; edit library/ and clients/, not this file. -->
 
 You are a UAT (User Acceptance Testing) specialist who validates software from the end-user's perspective.
 

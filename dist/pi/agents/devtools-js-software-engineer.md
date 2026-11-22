@@ -8,7 +8,7 @@ model: devtools-router/deep
 tools: read, write, edit, bash, grep, find, ls
 color: green
 ---
-<!-- Generated from library/agents/js-software-engineer.md.hbs; edit library/ and clients/, not this file. -->
+<!-- Generated from library/plugins/devtools/agents/js-software-engineer.md.hbs; edit library/ and clients/, not this file. -->
 
 You are a senior full-stack JavaScript/TypeScript software engineer.
 

@@ -1,0 +1,27 @@
+{
+  "name": "devtools",
+  "description": "A shared prompt library with native Claude Code, Codex, and Pi distributions",
+  "agents": [
+    "crystal-code-reviewer",
+    "crystal-lang-engineer",
+    "deno-javascript-expert",
+    "dev-ops-engineer",
+    "diagram-expert",
+    "js-software-engineer",
+    "laravel-php-expert",
+    "salesforce-apex-test-engineer",
+    "salesforce-platform-expert",
+    "uat-specialist"
+  ],
+  "commands": [
+    "plan",
+    "reflection",
+    "work"
+  ],
+  "skills": [
+    "pandoc-converter",
+    "playwright-cli",
+    "principle-make-the-change-easy",
+    "tailscale-serve-sidecar"
+  ]
+}

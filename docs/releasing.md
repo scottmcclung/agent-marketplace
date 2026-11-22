@@ -39,8 +39,15 @@ outputs with the same library version.
 
 The tag workflow validates that the tag equals `v` plus the package version,
 runs verification, creates Claude/Codex archives and a standalone Pi npm
-tarball, and publishes a GitHub release with checksums. It does **not** publish
-to npm, call client installers, or change anyone's machine configuration.
+tarball, and publishes a GitHub release with checksums. Each Claude/Codex
+archive contains only its plugin root's contents from `dist/<client>/<plugin>/`,
+not the host directory or its version stamp. Devtools archives keep the names
+`agent-marketplace-<client>-<version>.tar.gz`. Each additional catalog plugin,
+including `sfdc`, keeps its own archive named
+`agent-marketplace-<plugin>-<client>-<version>.tar.gz`. Pi keeps the same
+standalone package from `dist/pi/`, including the namespaced `sfdc` skills.
+It does **not** publish to npm, call client installers, or change anyone's
+machine configuration.
 GitHub's repository token needs permission to create releases.
 
 Git-backed native installs use the committed outputs in the selected Git
@@ -60,8 +67,9 @@ publishing, not required for the normal Git workflow.
   migrate to the next tag. Follow the installed Claude version's Git ref
   selection syntax rather than assuming Codex/Pi syntax applies there.
 - **Match exactly:** select sources referring to the same release and compare
-  each target's `library-version.json`. The version and `inputsDigest` should
-  both match. An update command is not an inter-client lockfile.
+  the host stamps at `dist/<client>/library-version.json`. The version and
+  `inputsDigest` should both match. An update command is not an inter-client
+  lockfile.
 
 Do not confuse updating the library with updating the clients themselves:
 `pi update --extensions` updates packages; `pi update` updates Pi;

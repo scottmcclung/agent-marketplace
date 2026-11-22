@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "sfdc",
+  "version": "0.3.0",
+  "description": "Salesforce planning and delivery workflows that decompose approved plans into beads milestones and execute them through devtools Salesforce, dev-ops, and UAT specialists.",
+  "author": {
+    "name": "Scott McClung"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/scottmcclung/agent-marketplace"
+}

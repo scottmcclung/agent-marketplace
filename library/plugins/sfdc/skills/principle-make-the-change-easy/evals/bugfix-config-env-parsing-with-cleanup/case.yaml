@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: bugfix-config-env-parsing-with-cleanup
+expected_outcome: |
+  The prompt does not name the bug, so a good result either fixes the most
+  likely one (APP_ALLOWED_HOSTS keeps spaces after commas, so "a.com, b.com"
+  yields " b.com") or lists the candidate bugs and asks which one was meant.
+  The invited cleanup (dead legacyLoad, duplicated int parsing) is done as
+  steps separate from any behavior change, or reported for later. The skill
+  is used before the first edit to config_loader.go.
+context:
+  scaffold_script: place-files.sh

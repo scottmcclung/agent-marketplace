@@ -1,15 +1,17 @@
 # Authoring
 
-## Shared documents
+## Plugin-owned documents
 
-Edit `library/`, not generated outputs. Documents use YAML frontmatter plus a
+The source contract puts all prompts under `library/plugins/<plugin>/`.
+Each plugin owns its source files and declares them in its local `plugin.json`.
+Edit those sources, not generated outputs. Documents use YAML frontmatter plus a
 Handlebars body; the whole document is rendered for each client before parsing.
 Use a YAML block scalar (`description: |`) or quote descriptions containing
 `: ` to avoid invalid YAML.
 
 ### Agent
 
-`library/agents/my-specialist.md.hbs`:
+`library/plugins/devtools/agents/my-specialist.md.hbs`:
 
 ```markdown
 ---
@@ -25,12 +27,13 @@ You are a failure investigator. Read the project's
 Return evidence, affected file paths, and recommended next steps.
 ```
 
-The filename must match `name`. The build automatically adds this agent to
-all three targets and to the `agents` template value map. Pi/Codex prefix its
-name; Claude uses its plugin namespace for references.
+The filename must match `name`. Declare `my-specialist` in the owning plugin's
+`agents` list. Rendering adds the declared agent to all three targets and to
+the `agents` template value map. Pi/Codex prefix its name; Claude uses its
+plugin namespace for references.
 
 Optional `skills: [playwright-cli]` declares skills the role requires. These
-must exist in the shared skill library. The adapters preserve them in native
+must exist in the owning plugin's local skill library. The adapters preserve them in native
 agent metadata where supported and include instructions for Codex delegation.
 
 Client-specific native fields such as `model`, `tools`, and `prompt_mode`
@@ -58,7 +61,7 @@ See [Pi model routing](pi-model-router.md) for runtime configuration.
 
 ### Command
 
-`library/commands/my-command.md.hbs`:
+`library/plugins/devtools/commands/my-command.md.hbs`:
 
 ```markdown
 ---
@@ -73,7 +76,8 @@ Use {{agents.js-software-engineer}} for implementation.
 {{client.delegation}}
 ```
 
-Claude emits a command, Pi a prompt template, and Codex a skill. `manualOnly`
+Declare `my-command` in the owning plugin's `commands` list. Claude emits a
+command, Pi a prompt template, and Codex a skill. `manualOnly`
 controls Codex's `allow_implicit_invocation` policy; Claude legacy commands and
 Pi prompt templates already require explicit invocation.
 
@@ -85,7 +89,7 @@ inside an ordinary file path such as `.tmp/plan-draft.md`.
 ### Skill
 
 ```text
-library/skills/my-skill/
+library/plugins/devtools/skills/my-skill/
   SKILL.md.hbs
   references/guide.md
   scripts/helper.mjs
@@ -100,12 +104,15 @@ description: Explain exactly when this capability applies.
 Read [the guide](references/guide.md) relative to this skill directory.
 ```
 
-Skill names must match their containing directory, use lowercase letters,
+Declare `my-skill` in the owning plugin's `skills` list. Skill names must
+match their containing directory, use lowercase letters,
 numbers, and single hyphens, and be no longer than 64 characters. Descriptions
 must be at most 1024 characters. References/scripts/assets remain together in
 every output. A skill's `evals/` folder is the exception. It holds the skill's
 test suite and fixture code for authors, stays in the library, and is left out
-of every output. Source symlinks are rejected so packages cannot accidentally
+of every output. When a skill has independent copies in different plugins,
+each copy owns its evals too. Its eval scripts must target that owning plugin's
+source, not the other copy. Source symlinks are rejected so packages cannot accidentally
 include files from outside the library.
 
 Only files ending in `.hbs` are rendered, and the suffix is removed in the
@@ -119,6 +126,97 @@ Host-specific skill fields go in `skillAttributes` under the source skill
 name, for example Claude's `allowed-tools` for Playwright. Avoid presenting
 that field as a portable permission boundary.
 
+### Plugin
+
+Every plugin uses the same manifest contract, including `devtools`. A plugin
+can own agents, commands, and skills. Keep every declared source physically
+inside that plugin. The layout is:
+
+```text
+library/plugins/
+  devtools/
+    plugin.json
+    agents/*.md.hbs
+    commands/*.md.hbs
+    skills/<skill>/SKILL.md.hbs
+  sfdc/
+    plugin.json
+    skills/plan/SKILL.md.hbs
+    skills/work/SKILL.md.hbs
+    skills/principle-make-the-change-easy/SKILL.md.hbs
+```
+
+The sfdc manifest is:
+
+```json
+{
+  "name": "sfdc",
+  "description": "Salesforce planning and delivery workflows.",
+  "agents": [],
+  "commands": [],
+  "skills": ["plan", "work", "principle-make-the-change-easy"]
+}
+```
+
+- `name` must match the folder and be a lowercase hyphenated identifier.
+  Names must be unique and must not collide with published feature names.
+  `devtools` names the existing plugin.
+- `description` is required. It becomes the plugin manifest and catalog
+  description.
+- `agents`, `commands`, and `skills` are required arrays of local canonical
+  names, not paths or client-prefixed names. Use `[]` for an absent kind.
+- An agent entry declares `agents/<name>.md.hbs`; a command entry declares
+  `commands/<name>.md.hbs`; a skill entry declares
+  `skills/<name>/SKILL.md.hbs` and its local resources. Every source document
+  must be declared, and every declaration must have its local source.
+- No other manifest fields are accepted. There is no shared-source option,
+  source alias, or cross-plugin source reuse.
+
+Both plugins own a physical copy of `principle-make-the-change-easy`. Edit each
+copy independently. Do not replace either with a symlink, import, or build-time
+copy from the other plugin. Plugin skills follow the same rules described
+above for metadata, resources, `.hbs` rendering, shebang modes, and `evals/`
+exclusion. Keep host-specific attributes in client configuration rather than
+adding them to the plugin manifest.
+
+Claude plugins emit at `dist/claude/<plugin>/`; Codex plugins emit at
+`dist/codex/<plugin>/`. Catalog entries point to these nested roots. Host
+stamps stay at `dist/<client>/library-version.json`. Sfdc installs separately
+from devtools on Claude and Codex and merges into the existing Pi package at
+`dist/pi/`. Native names and invocation syntax are unchanged. Keep
+harness-specific features under `features/`, separate from library plugins.
+
+Preserve existing core client fields and sfdc maps when moving sources. An
+explicit `plugins.devtools` mapping may use the existing `config.skillName`
+pattern for both `skillName` and `skillReference`. Devtools skill context
+historically contains names, not slash references; preserve those prompt
+bodies rather than changing their invocation syntax. Sfdc's existing
+`skillName` and `skillReference` patterns receive the local canonical `name`:
+
+| Client | `skillName` | `skillReference` |
+| --- | --- | --- |
+| Claude | `{{name}}` | `/sfdc:{{name}}` |
+| Codex | `sfdc-{{name}}` | `$sfdc-{{name}}` |
+| Pi | `sfdc-{{name}}` | `/skill:sfdc-{{name}}` |
+
+The Pi prefix matters. Pi plugin skills share the package's flat skill
+namespace, and a collision with a devtools skill fails the build. A mapping
+for an unknown plugin also fails.
+
+Inside sfdc skills, `skills.<name>` is the plugin-local map. It contains only
+the skills declared by sfdc, rendered through `skillReference`. Referencing a
+skill absent from that local list fails the build. Write `{{skills.work}}` to
+emit `/sfdc:work`, `$sfdc-work`, or `/skill:sfdc-work`.
+
+Source ownership does not remove runtime dependencies. Sfdc has no agents or
+commands of its own. Its existing `agents` and `commands` references still
+resolve to devtools, so `{{agents.salesforce-platform-expert}}` points at the
+existing devtools specialist. `client` and `library` retain their existing
+values. Document the devtools dependency in the sfdc workflows. Claude and
+Codex require devtools installed alongside sfdc; Pi supplies both in one
+package. Workflows must stop and identify any missing specialist rather than
+doing specialist work in the parent.
+
 ## Template context
 
 | Value | Purpose |
@@ -131,7 +229,7 @@ that field as a portable permission boundary.
 | `client.delegation` | Host-specific orchestration/capability contract |
 | `agents.<canonical-name>` | A native agent reference or delegation skill identity |
 | `commands.<canonical-name>` | Native invocation syntax |
-| `skills.<canonical-name>` | Skill name in this host |
+| `skills.<canonical-name>` | Skill name in this host; plugin-local references inside plugin skills |
 | `library.name`, `library.version` | Package identity |
 
 Client `values` can add more keys. Name mapping patterns receive only `name`.
@@ -154,7 +252,7 @@ the host to substitute later.
 
 ```bash
 npm ci
-# edit library/ and/or clients/
+# edit library/plugins/, clients/, and/or harness-specific features/
 npm run build
 npm run verify
 git diff -- library clients dist .claude-plugin .agents/plugins

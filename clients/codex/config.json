@@ -6,6 +6,7 @@
   "commandName": "devtools-{{name}}",
   "commandReference": "$devtools-{{name}}",
   "skillName": "{{name}}",
+  "plugins": { "devtools": { "skillName": "{{name}}", "skillReference": "{{name}}" }, "sfdc": { "skillName": "sfdc-{{name}}", "skillReference": "$sfdc-{{name}}" } },
   "models": { "deep": null, "balanced": null, "fast": null, "inherit": null },
   "tools": { "development": null, "operations": null, "uat": null },
   "colors": { "blue": null, "green": null, "red": null, "purple": null, "cyan": null },
